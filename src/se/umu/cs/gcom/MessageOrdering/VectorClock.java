@@ -1,35 +1,36 @@
 package se.umu.cs.gcom.MessageOrdering;
 
-import se.umu.cs.gcom.Communication.User;
+import se.umu.cs.gcom.GroupManagement.User;
 
+import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
 public class VectorClock implements Comparable<VectorClock> {
-    private HashMap<UUID, Integer> clock;
+    private HashMap<String, Integer> clock;
 
     public VectorClock() {
         clock = new HashMap<>();
     }
 
-    public VectorClock(HashMap<UUID, Integer> clock) {
+    public VectorClock(HashMap<String, Integer> clock) {
         this.clock = clock;
     }
 
-    public void initialize(User user) {
-        clock.put(user.getUserID(), 0);
+    public void initialize(User user) throws RemoteException {
+        clock.put(user.getId(), 0);
     }
 
-    public void increment(User user) {
-        int oldValue = clock.get(user.getUserID());
+    public void increment(User user) throws RemoteException {
+        int oldValue = clock.get(user.getId());
         int newValue = oldValue + 1;
-        clock.put(user.getUserID(), newValue);
+        clock.put(user.getId(), newValue);
     }
 
-    public void remove(User user) {
-        clock.remove(user.getUserID());
+    public void remove(User user) throws RemoteException {
+        clock.remove(user.getId());
     }
 
     /**
@@ -38,11 +39,11 @@ public class VectorClock implements Comparable<VectorClock> {
      */
     public void update(VectorClock otherClock) {
 
-        Set<UUID> knownUsers = this.clock.keySet();
+        Set<String> knownUsers = this.clock.keySet();
         // Expand the users set, because the vector clock from a received message may contain the clock of other users
         // that the current clock has not seen before.
         knownUsers.addAll(otherClock.clock.keySet());
-        for (UUID userID : knownUsers
+        for (String userID : knownUsers
         ) {
             clock.putIfAbsent(userID, 0);
             otherClock.clock.putIfAbsent(userID, 0);
@@ -51,10 +52,10 @@ public class VectorClock implements Comparable<VectorClock> {
     }
 
     public boolean lessThan(VectorClock otherClock) {
-        HashSet<UUID> ourSet = new HashSet<>(this.clock.keySet());
+        HashSet<String> ourSet = new HashSet<>(this.clock.keySet());
         ourSet.addAll(otherClock.clock.keySet());
 
-        for (UUID userID : ourSet
+        for (String userID : ourSet
         ) {
             clock.putIfAbsent(userID, 0);
             otherClock.clock.putIfAbsent(userID, 0);

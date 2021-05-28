@@ -7,6 +7,9 @@ import java.util.List;
 public interface IGroupManagement {
     //1
     void joinGroup(String groupId) throws RemoteException;
+    void leaveGroup() throws RemoteException;
+
+    void createGroup(String groupId) throws RemoteException;
     void removeGroup(String groupId) throws RemoteException;
 
     void addMember(User member) throws RemoteException;
@@ -17,7 +20,7 @@ public interface IGroupManagement {
     //4
     List<User> getAllMembers(String groupId) throws RemoteException;
     //NamingService
-    void getLeader(String groupId) throws RemoteException;
+    User getLeader(String groupId) throws RemoteException;
     List<String> getAllGroups() throws RemoteException;
     HashMap<String, User> getUserMap() throws RemoteException;
 
