@@ -10,7 +10,7 @@ public class NamingServer {
             // creatRegistry is different from getRegistry.
             Registry registry = LocateRegistry.createRegistry(8888);
             registry.rebind("NamingService", namingService);
-            System.out.println("The name server is bound sucessfully！");
+            System.out.println("The name server is bound successfully！");
         } catch (Exception e) {
             e.printStackTrace();
             System.err.println("Failed to bind the name server");
