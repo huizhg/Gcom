@@ -6,17 +6,22 @@ import se.umu.cs.gcom.Naming.INamingService;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
-public class testNaming1 {
+public class showGroupInNaming {
     public static void main(String[] args) throws RemoteException{
         try {
 
             Registry registry = LocateRegistry.getRegistry(8888);
             INamingService stub = (INamingService) registry.lookup("NamingService");
-
-            System.out.println(stub.getAllGroups());
+            HashMap userMap = stub.getUserMap();
+            Iterator iter = userMap.entrySet().iterator();
+            while (iter.hasNext()){
+                Map.Entry entry = (Map.Entry) iter.next();
+                String groupname = (String) entry.getKey();
+                User leader = (User) entry.getValue();
+                System.out.println("Group - "+groupname+"; Leader - "+leader.getId());
+            }
         }catch (Exception e){
             e.printStackTrace();
         }

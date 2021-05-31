@@ -2,6 +2,8 @@ package se.umu.cs.gcom.Debugger;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 
 public class TestView {
     private JTextField createGroupField;
@@ -17,6 +19,15 @@ public class TestView {
     private JLabel orderingLabel;
     private JButton removeButton;
     private JPanel userPanel;
+
+    public TestView() {
+        userPanel.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentHidden(ComponentEvent e) {
+                super.componentHidden(e);
+            }
+        });
+    }
 
     public JTextField getCreateGroupField() {
         return createGroupField;
@@ -193,7 +204,7 @@ public class TestView {
         gbc.gridheight = 3;
         gbc.weightx = 1.0;
         gbc.weighty = 1.0;
-        gbc.fill = GridBagConstraints.VERTICAL;
+        gbc.fill = GridBagConstraints.BOTH;
         userPanel.add(GrouplistField, gbc);
     }
 

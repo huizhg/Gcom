@@ -104,7 +104,7 @@
       </component>
       <component id="76023" class="javax.swing.JList" binding="GrouplistField">
         <constraints>
-          <grid row="2" column="0" row-span="3" col-span="3" vsize-policy="6" hsize-policy="2" anchor="0" fill="2" indent="0" use-parent-layout="false">
+          <grid row="2" column="0" row-span="3" col-span="3" vsize-policy="6" hsize-policy="2" anchor="0" fill="3" indent="0" use-parent-layout="false">
             <preferred-size width="150" height="50"/>
           </grid>
           <gridbag weightx="1.0" weighty="1.0"/>

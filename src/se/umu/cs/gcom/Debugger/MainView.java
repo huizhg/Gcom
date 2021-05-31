@@ -12,13 +12,16 @@ public class MainView extends JFrame {
     private JTextField userText = new JTextField();           // 获取登录名
     private JButton loginButton = new JButton("login");       // 创建登录按钮
 
-    private JPanel userPanel = new JPanel();
+    private JPanel groupPanel = new JPanel();
     private JTextField createGroupField;
     private JComboBox comTypeBox;
     private JComboBox orderTypeBox;
     private JButton createButton;
     private JButton joinButton1;
-    private JList GrouplistField;
+
+
+
+    private JList grouplistField;
     private JLabel createGroupLabel;
     private JLabel communicationLabel;
     private JLabel joinGroupLabel;
@@ -26,22 +29,24 @@ public class MainView extends JFrame {
     private JLabel orderingLabel;
     private JButton removeButton;
 
-    public JFrame getFrame() {
-        return frame;
+    //GroupView
+    public JList getGrouplistField() {
+        return grouplistField;
+    }
+    public JTextField getCreateGroupField() {
+        return createGroupField;
+    }
+    public JButton getCreateButton() {
+        return createButton;
     }
 
-    public JPanel getUserPanel() {
-        return userPanel;
-    }
-
+    // LoginView
     public JPanel getLoginPanel() {
         return loginPanel;
     }
-
     public JTextField getUserText() {
         return userText;
     }
-
     public JButton getLoginButton() {
         return loginButton;
     }
@@ -54,13 +59,13 @@ public class MainView extends JFrame {
         buildLoginView(loginPanel);                                //往窗体里放其他控件
         frame.setVisible(true);                                //设置窗体可见
     }
-    public void buildUserView (String userName){
-        frame.add(userPanel);
+    public void buildGroupView (String userName){
+        frame.add(groupPanel);
         frame.setTitle("GCom: User - "+userName);
         frame.setSize(700, 600);
         frame.setLocationRelativeTo(null);
 
-        userPanel.setLayout(new GridBagLayout());
+        groupPanel.setLayout(new GridBagLayout());
         createGroupLabel = new JLabel();
         createGroupLabel.setText("Create Group");
         GridBagConstraints gbc;
@@ -70,7 +75,7 @@ public class MainView extends JFrame {
         gbc.weightx = 1.0;
         gbc.weighty = 1.0;
         gbc.anchor = GridBagConstraints.WEST;
-        userPanel.add(createGroupLabel, gbc);
+        groupPanel.add(createGroupLabel, gbc);
         communicationLabel = new JLabel();
         communicationLabel.setText("Communication");
         gbc = new GridBagConstraints();
@@ -79,7 +84,7 @@ public class MainView extends JFrame {
         gbc.weightx = 1.0;
         gbc.weighty = 1.0;
         gbc.anchor = GridBagConstraints.WEST;
-        userPanel.add(communicationLabel, gbc);
+        groupPanel.add(communicationLabel, gbc);
         createGroupField = new JTextField();
         gbc = new GridBagConstraints();
         gbc.gridx = 1;
@@ -88,7 +93,7 @@ public class MainView extends JFrame {
         gbc.weighty = 1.0;
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        userPanel.add(createGroupField, gbc);
+        groupPanel.add(createGroupField, gbc);
         joinGroupLabel = new JLabel();
         joinGroupLabel.setText("Join Group");
         gbc = new GridBagConstraints();
@@ -97,7 +102,7 @@ public class MainView extends JFrame {
         gbc.weightx = 1.0;
         gbc.weighty = 1.0;
         gbc.anchor = GridBagConstraints.WEST;
-        userPanel.add(joinGroupLabel, gbc);
+        groupPanel.add(joinGroupLabel, gbc);
         joinGroupField = new JTextField();
         gbc = new GridBagConstraints();
         gbc.gridx = 3;
@@ -106,7 +111,7 @@ public class MainView extends JFrame {
         gbc.weighty = 1.0;
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        userPanel.add(joinGroupField, gbc);
+        groupPanel.add(joinGroupField, gbc);
         orderingLabel = new JLabel();
         orderingLabel.setText("Ordering");
         gbc = new GridBagConstraints();
@@ -115,7 +120,7 @@ public class MainView extends JFrame {
         gbc.weightx = 1.0;
         gbc.weighty = 1.0;
         gbc.anchor = GridBagConstraints.WEST;
-        userPanel.add(orderingLabel, gbc);
+        groupPanel.add(orderingLabel, gbc);
         comTypeBox = new JComboBox();
         gbc = new GridBagConstraints();
         gbc.gridx = 1;
@@ -124,7 +129,7 @@ public class MainView extends JFrame {
         gbc.weighty = 1.0;
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        userPanel.add(comTypeBox, gbc);
+        groupPanel.add(comTypeBox, gbc);
         orderTypeBox = new JComboBox();
         gbc = new GridBagConstraints();
         gbc.gridx = 3;
@@ -133,7 +138,7 @@ public class MainView extends JFrame {
         gbc.weighty = 1.0;
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        userPanel.add(orderTypeBox, gbc);
+        groupPanel.add(orderTypeBox, gbc);
         createButton = new JButton();
         createButton.setText("Create");
         gbc = new GridBagConstraints();
@@ -142,7 +147,7 @@ public class MainView extends JFrame {
         gbc.weightx = 1.0;
         gbc.weighty = 1.0;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        userPanel.add(createButton, gbc);
+        groupPanel.add(createButton, gbc);
         removeButton = new JButton();
         removeButton.setText("Remove");
         gbc = new GridBagConstraints();
@@ -151,7 +156,7 @@ public class MainView extends JFrame {
         gbc.weightx = 1.0;
         gbc.weighty = 1.0;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        userPanel.add(removeButton, gbc);
+        groupPanel.add(removeButton, gbc);
         joinButton1 = new JButton();
         joinButton1.setText("Join");
         gbc = new GridBagConstraints();
@@ -160,10 +165,10 @@ public class MainView extends JFrame {
         gbc.weightx = 1.0;
         gbc.weighty = 1.0;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        userPanel.add(joinButton1, gbc);
-        GrouplistField = new JList();
+        groupPanel.add(joinButton1, gbc);
+        grouplistField = new JList();
         final DefaultListModel defaultListModel1 = new DefaultListModel();
-        GrouplistField.setModel(defaultListModel1);
+        grouplistField.setModel(defaultListModel1);
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 2;
@@ -171,8 +176,8 @@ public class MainView extends JFrame {
         gbc.gridheight = 3;
         gbc.weightx = 1.0;
         gbc.weighty = 1.0;
-        gbc.fill = GridBagConstraints.VERTICAL;
-        userPanel.add(GrouplistField, gbc);
+        gbc.fill = GridBagConstraints.BOTH;
+        groupPanel.add(grouplistField, gbc);
 
 //        userPanel.setEnabled(true);
 //        userPanel.setVisible(true);
