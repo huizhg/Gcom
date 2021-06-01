@@ -28,6 +28,90 @@ public class MainController {
         loginController();
     }
     private void loginController(){
+        loginButtonListener();
+    }
+    private void groupController(){
+        updateGrouplist();
+        createButtonListener();
+        removeButtionListener();
+        joinButtionListener();
+    }
+    private void userController(){
+
+    }
+    private void joinButtionListener(){
+        mainView.getJoinButton().addActionListener(e -> {
+            String groupName = mainView.getJoinGroupField().getText();
+            String username = "";
+            try {
+//                groupManager.joinGroup(groupName);
+                username = user.getId();
+                System.out.println("Join Group: "+ groupName+", User: "+username);
+            } catch (RemoteException remoteException) {
+                System.out.println("Failed to join group.");
+            }
+            updateGrouplist();
+
+            mainView.getGroupPanel().setEnabled(false);
+            mainView.getGroupPanel().setVisible(false);
+            mainView.buildUserView(username);
+            userController();
+        });
+    }
+    private void removeButtionListener(){
+        mainView.getRemoveButton().addActionListener(e -> {
+            String groupName = (String) mainView.getGrouplistField().getSelectedValue();
+            try {
+                groupManager.removeGroup(groupName);
+                System.out.println("Remove Group: "+ groupName+", leader: "+user.getId());
+            } catch (RemoteException remoteException) {
+                System.out.println("Failed to remove group.");
+            }
+            updateGrouplist();
+        });
+    }
+    private void createButtonListener(){
+        mainView.getCreateButton().addActionListener(e -> {
+            String groupName = mainView.getCreateGroupField().getText();
+//            List<String> grouplist = new ArrayList<>();
+            try {
+                groupManager.createGroup(groupName);
+                System.out.println("Create Group: "+ groupName+", leader: "+user.getId());
+//                grouplist = nameStub.getAllGroups();
+            } catch (RemoteException remoteException) {
+                System.out.println("Failed to create group.");
+            }
+            updateGrouplist();
+//            try {
+//                updategrouplist();
+//                System.out.println("Group list was updated.");
+//            } catch (RemoteException remoteException) {
+//                System.out.println("Failed to update group list.");
+//            }
+//            DefaultListModel<String> grouplistmodel = new DefaultListModel<>();
+//            for (String g: grouplist){
+//                grouplistmodel.addElement(g);
+//            }
+//            mainView.getGrouplistField().setModel(grouplistmodel);
+        });
+    }
+
+    private void updateGrouplist() {
+        List<String> groupList = new ArrayList<>();
+        try {
+            groupList = nameStub.getAllGroups();
+            System.out.println("Group list was updated.");
+        } catch (RemoteException e) {
+            System.out.println("Failed to update group list.");
+        }
+        DefaultListModel<String> grouplistmodel = new DefaultListModel<>();
+        for (String g: groupList){
+            grouplistmodel.addElement(g);
+        }
+        mainView.getGrouplistField().setModel(grouplistmodel);
+    }
+
+    private void loginButtonListener(){
         mainView.getLoginButton().addActionListener(e -> {
             String username = mainView.getUserText().getText();
             this.user = new User(username);
@@ -51,45 +135,5 @@ public class MainController {
             mainView.buildGroupView(username);
             groupController();
         });
-    }
-    private void groupController(){
-        updategrouplist();
-        mainView.getCreateButton().addActionListener(e -> {
-            String groupname = mainView.getCreateGroupField().getText();
-//            List<String> grouplist = new ArrayList<>();
-            try {
-                groupManager.createGroup(groupname);
-                System.out.println("Create Group: "+ groupname+", leader: "+user.getId());
-//                grouplist = nameStub.getAllGroups();
-            } catch (RemoteException remoteException) {
-                System.out.println("Failed to create group.");
-            }
-            updategrouplist();
-//            try {
-//                updategrouplist();
-//                System.out.println("Group list was updated.");
-//            } catch (RemoteException remoteException) {
-//                System.out.println("Failed to update group list.");
-//            }
-//            DefaultListModel<String> grouplistmodel = new DefaultListModel<>();
-//            for (String g: grouplist){
-//                grouplistmodel.addElement(g);
-//            }
-//            mainView.getGrouplistField().setModel(grouplistmodel);
-        });
-    }
-    private void updategrouplist() {
-        List<String> grouplist = new ArrayList<>();
-        try {
-            grouplist = nameStub.getAllGroups();
-            System.out.println("Group list was updated.");
-        } catch (RemoteException e) {
-            System.out.println("Failed to update group list.");
-        }
-        DefaultListModel<String> grouplistmodel = new DefaultListModel<>();
-        for (String g: grouplist){
-            grouplistmodel.addElement(g);
-        }
-        mainView.getGrouplistField().setModel(grouplistmodel);
     }
 }
