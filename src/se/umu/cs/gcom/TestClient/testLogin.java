@@ -20,7 +20,8 @@ public class testLogin {
             Registry registry = LocateRegistry.getRegistry(8888);
             System.out.println(registry.toString());
             System.out.println(Arrays.toString(registry.list()));
-            IGComService stub = (IGComService) registry.lookup("user");
+            IGComService stub = (IGComService) registry.lookup("q1");
+            stub.getUser();
 
             System.out.println("Get it!");
 

@@ -21,12 +21,12 @@ public class testNaming {
             System.out.println(u1.getId());
             Registry registry = LocateRegistry.getRegistry(8888);
             INamingService stub = (INamingService) registry.lookup("NamingService");
-            INamingService stub1 = (INamingService) registry.lookup("NamingService");
-
-            List<INamingService> uList = new ArrayList();
-            uList.add(stub);
-            uList.add(stub1);
-            System.out.println(uList);
+//            INamingService stub1 = (INamingService) registry.lookup("NamingService");
+            stub.getLeader("ggg");
+//            List<INamingService> uList = new ArrayList();
+//            uList.add(stub);
+//            uList.add(stub1);
+//            System.out.println(uList);
 //            System.out.println(stub.equals(stub1));
 //            stub.createGroup("g1",u1);
 //            stub.deleteGroup("g1");

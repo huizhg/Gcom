@@ -17,7 +17,10 @@ public class User implements IUser, Serializable {
         this.userId = userId;
     }
 
-    public IGComService getgcomstub(String groupId) throws RemoteException, NotBoundException {
+    public User() {
+    }
+
+    public IGComService getgcomstub() throws RemoteException, NotBoundException {
         Registry registry = LocateRegistry.getRegistry(8888);
         // Different groups with same user need different gcomstub
         IGComService gcomstub = (IGComService) registry.lookup(this.userId);

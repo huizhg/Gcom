@@ -15,6 +15,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class MainController {
     private MainView mainView;
@@ -37,25 +38,63 @@ public class MainController {
         joinButtionListener();
     }
     private void userController(){
+        updateMemberList();
+        updateMemberButtonListener();
+    }
+    private void updateMemberButtonListener(){
+        mainView.getUpdateMemberButton().addActionListener(e -> {
+            updateMemberList();
+//            System.out.println("Update member list");
+//            List<String> liveM = new ArrayList<>();
+//            try {
+//                Map<Integer, List<String>> map = groupManager.liveCheck();
+//                liveM = map.get(1);
+//            } catch (RemoteException remoteException) {
+//                remoteException.printStackTrace();
+//            }
+//
+//            DefaultListModel<String> mListModel = new DefaultListModel<>();
+//            for (String m:liveM){
+//                mListModel.addElement(m);
+//            }
+//            mainView.getMemberlist().setModel(mListModel);
 
+        });
+    }
+    private void updateMemberList(){
+        System.out.println("Update member list");
+        List<String> liveM = new ArrayList<>();
+        try {
+            Map<Integer, List<String>> map = groupManager.liveCheck();
+            liveM = map.get(1);
+        } catch (RemoteException remoteException) {
+            remoteException.printStackTrace();
+        }
+
+        DefaultListModel<String> mListModel = new DefaultListModel<>();
+        for (String m:liveM){
+            mListModel.addElement(m);
+        }
+        mainView.getMemberlist().setModel(mListModel);
     }
     private void joinButtionListener(){
         mainView.getJoinButton().addActionListener(e -> {
-            String groupName = mainView.getJoinGroupField().getText();
+            String groupName = (String) mainView.getGrouplistField().getSelectedValue();
+//            String groupName = mainView.getJoinGroupField().getText();
             String username = "";
             try {
-//                groupManager.joinGroup(groupName);
+                groupManager.joinGroup(groupName);
                 username = user.getId();
                 System.out.println("Join Group: "+ groupName+", User: "+username);
+                //---
+                updateGrouplist();
+                mainView.getGroupPanel().setEnabled(false);
+                mainView.getGroupPanel().setVisible(false);
+                mainView.buildUserView(username);
+                userController();
             } catch (RemoteException remoteException) {
                 System.out.println("Failed to join group.");
             }
-            updateGrouplist();
-
-            mainView.getGroupPanel().setEnabled(false);
-            mainView.getGroupPanel().setVisible(false);
-            mainView.buildUserView(username);
-            userController();
         });
     }
     private void removeButtionListener(){
@@ -104,11 +143,11 @@ public class MainController {
         } catch (RemoteException e) {
             System.out.println("Failed to update group list.");
         }
-        DefaultListModel<String> grouplistmodel = new DefaultListModel<>();
+        DefaultListModel<String> groupListModel = new DefaultListModel<>();
         for (String g: groupList){
-            grouplistmodel.addElement(g);
+            groupListModel.addElement(g);
         }
-        mainView.getGrouplistField().setModel(grouplistmodel);
+        mainView.getGrouplistField().setModel(groupListModel);
     }
 
     private void loginButtonListener(){
@@ -118,10 +157,10 @@ public class MainController {
             try {
                 this.registry = LocateRegistry.getRegistry(8888);
                 this.nameStub = (INamingService) registry.lookup("NamingService");
+                this.groupManager = new GroupManager(this.user,this.nameStub);
             } catch (RemoteException | NotBoundException remoteException) {
                 remoteException.printStackTrace();
             }
-            this.groupManager = new GroupManager(this.user,this.nameStub);
 
             try {
                 IGComService gComService = new GComService(this.user,this.groupManager);

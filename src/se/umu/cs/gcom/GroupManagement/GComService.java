@@ -4,6 +4,7 @@ import se.umu.cs.gcom.MessageOrdering.Message;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.List;
 
 public class GComService extends UnicastRemoteObject implements IGComService {
     private static final long serialVersionUID = -2712648834546112309L;
@@ -23,6 +24,11 @@ public class GComService extends UnicastRemoteObject implements IGComService {
     @Override
     public GroupManager getGroupManager() throws RemoteException {
         return groupManager;
+    }
+
+    @Override
+    public void updateMemberlist(List<String> mList) throws RemoteException {
+        groupManager.setMemberlist(mList);
     }
 
 

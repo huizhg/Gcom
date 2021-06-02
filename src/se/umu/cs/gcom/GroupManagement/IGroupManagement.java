@@ -18,7 +18,8 @@ public interface IGroupManagement {
     void notifyMemberJoined(User member) throws RemoteException;
     void notifyMemberLeft(User member) throws RemoteException;
     //4
-    List<User> getAllMembers(String groupId) throws RemoteException;
+    List<String> getAllMembers() throws RemoteException;
+//    List<String> getAllMembers(String groupId) throws RemoteException;
     //NamingService
     User getLeader(String groupId) throws RemoteException;
     List<String> getAllGroups() throws RemoteException;
