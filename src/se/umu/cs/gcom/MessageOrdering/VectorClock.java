@@ -2,35 +2,39 @@ package se.umu.cs.gcom.MessageOrdering;
 
 import se.umu.cs.gcom.GroupManagement.User;
 
-import java.rmi.RemoteException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.io.Serializable;
+import java.util.*;
 
-public class VectorClock implements Comparable<VectorClock> {
-    private HashMap<String, Integer> clock;
+public class VectorClock implements Comparable<VectorClock>, Serializable {
+    private static final long serialVersionUID = -1764420974559772373L;
+    private HashMap<UUID, Integer> clock;
 
     public VectorClock() {
         clock = new HashMap<>();
     }
 
-    public VectorClock(HashMap<String, Integer> clock) {
+    public VectorClock(HashMap<UUID, Integer> clock) {
         this.clock = clock;
     }
 
-    public void initialize(User user) throws RemoteException {
-        clock.put(user.getId(), 0);
+//    public void initialize(User user) {
+//        clock.put(user.getUserID(), 0);
+//    }
+
+    public void increment(User user) {
+//        System.out.println("User ID = "+user.getUserID());
+        Integer oldValue = clock.get(user.getUserID());
+        if (oldValue == null){
+            oldValue = 0;
+        }
+        Integer newValue = oldValue + 1;
+//        System.out.println("Old value = "+oldValue);
+//        System.out.println("new value = "+newValue);
+        clock.put(user.getUserID(), newValue);
     }
 
-    public void increment(User user) throws RemoteException {
-        int oldValue = clock.get(user.getId());
-        int newValue = oldValue + 1;
-        clock.put(user.getId(), newValue);
-    }
-
-    public void remove(User user) throws RemoteException {
-        clock.remove(user.getId());
+    public void remove(User user) {
+        clock.remove(user.getUserID());
     }
 
     /**
@@ -38,13 +42,18 @@ public class VectorClock implements Comparable<VectorClock> {
      *                   clock of current process with the received clock and update the clock of current process.
      */
     public void update(VectorClock otherClock) {
-
-        Set<String> knownUsers = this.clock.keySet();
+//        System.out.println("In update.");
+        ArrayList<UUID> knownUsers = new ArrayList<>(this.clock.keySet());
+//        System.out.println("Known user - "+knownUsers.toString());
+//        System.out.println("Incoming - "+otherClock.clock.keySet());
+//        System.out.println(knownUsers.addAll(otherClock.clock.keySet()));
         // Expand the users set, because the vector clock from a received message may contain the clock of other users
         // that the current clock has not seen before.
         knownUsers.addAll(otherClock.clock.keySet());
-        for (String userID : knownUsers
+//        System.out.println("Before loop");
+        for (UUID userID : knownUsers
         ) {
+//            System.out.println("In loop");
             clock.putIfAbsent(userID, 0);
             otherClock.clock.putIfAbsent(userID, 0);
             this.clock.put(userID, Math.max(this.clock.get(userID), otherClock.clock.get(userID)));
@@ -52,10 +61,10 @@ public class VectorClock implements Comparable<VectorClock> {
     }
 
     public boolean lessThan(VectorClock otherClock) {
-        HashSet<String> ourSet = new HashSet<>(this.clock.keySet());
+        HashSet<UUID> ourSet = new HashSet<>(this.clock.keySet());
         ourSet.addAll(otherClock.clock.keySet());
 
-        for (String userID : ourSet
+        for (UUID userID : ourSet
         ) {
             clock.putIfAbsent(userID, 0);
             otherClock.clock.putIfAbsent(userID, 0);
@@ -67,9 +76,12 @@ public class VectorClock implements Comparable<VectorClock> {
         return true;
 
     }
-
     public VectorClock copy() throws CloneNotSupportedException {
-        return (VectorClock) this.clone();
+//        System.out.println("Cloneing!");
+        HashMap<UUID, Integer> copyMap = new HashMap<UUID, Integer>();
+        copyMap.putAll(this.clock);
+        VectorClock newClock = new VectorClock(copyMap);
+        return newClock;
     }
 
     @Override
@@ -81,5 +93,10 @@ public class VectorClock implements Comparable<VectorClock> {
         } else {
             return 0;
         }
+    }
+
+    @Override
+    public String toString() {
+        return clock.toString();
     }
 }

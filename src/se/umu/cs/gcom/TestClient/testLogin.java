@@ -1,6 +1,7 @@
 package se.umu.cs.gcom.TestClient;
 
 import se.umu.cs.gcom.GroupManagement.GComService;
+import se.umu.cs.gcom.GroupManagement.Group;
 import se.umu.cs.gcom.GroupManagement.IGComService;
 import se.umu.cs.gcom.GroupManagement.User;
 import se.umu.cs.gcom.Naming.INamingService;
@@ -20,11 +21,15 @@ public class testLogin {
             Registry registry = LocateRegistry.getRegistry(8888);
             System.out.println(registry.toString());
             System.out.println(Arrays.toString(registry.list()));
-            IGComService stub = (IGComService) registry.lookup("q1");
-            stub.getUser();
-
+            IGComService stub = (IGComService) registry.lookup("u1");
+            User u1 = stub.getUser();
+            List<Group> gl = u1.getGroupList();
+            for(Group g:gl){
+                System.out.println(g.getGroupName());
+                System.out.println(g.getCommunicationMethod().getClass());
+                System.out.println(g.getOrderingMethod().getClass());
+            }
             System.out.println("Get it!");
-
 
         }catch (Exception e){
             e.printStackTrace();

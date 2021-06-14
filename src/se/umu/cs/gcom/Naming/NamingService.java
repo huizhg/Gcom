@@ -46,7 +46,7 @@ public class NamingService extends UnicastRemoteObject implements INamingService
     @Override
     public List<String> getAllGroups() throws RemoteException {
         List<String> grouplist = new ArrayList<String>(userMap.keySet());
-        System.out.println("Access All Groups.");
+//        System.out.println("Access All Groups.");
         return grouplist;
     }
 

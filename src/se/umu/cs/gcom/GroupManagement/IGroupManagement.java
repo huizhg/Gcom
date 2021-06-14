@@ -9,7 +9,8 @@ public interface IGroupManagement {
     void joinGroup(String groupId) throws RemoteException;
     void leaveGroup() throws RemoteException;
 
-    void createGroup(String groupId) throws RemoteException;
+    void createGroup(String groupId, Group group) throws RemoteException;
+//    void createGroup(String groupId) throws RemoteException;
     void removeGroup(String groupId) throws RemoteException;
 
     void addMember(User member) throws RemoteException;

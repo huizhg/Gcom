@@ -1,5 +1,7 @@
 package se.umu.cs.gcom.Debugger;
 
+import se.umu.cs.gcom.MessageOrdering.Message;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -39,6 +41,40 @@ public class MainView extends JFrame {
     private JButton removeMemberButton;
     private JButton addMemberButton;
     private JPanel userView;
+    //DebuggerView
+    private JFrame debugframe;
+    private JPanel debugPanel;
+    private JButton debugsendButton;
+    private JButton debugdeliverButton;
+    private JButton debugshowButton;
+    private JList debugmessagesList;
+    private JList debugqueueList;
+    public DefaultListModel<Message> msglistModel = new DefaultListModel<>();
+    public DefaultListModel<String> queuelistModel = new DefaultListModel<>();
+
+    //DebugView
+
+
+    public JButton getDebugdeliverButton() {
+        return debugdeliverButton;
+    }
+
+    public JList getDebugqueueList() {
+        return debugqueueList;
+    }
+
+    public JList getDebugmessagesList() {
+        return debugmessagesList;
+    }
+
+    public JButton getDebugsendButton() {
+        return debugsendButton;
+    }
+
+    public JFrame getDebugframe() {
+        return debugframe;
+    }
+
     //UserView
     public JList getMemberlist() {
         return memberlist;
@@ -50,6 +86,18 @@ public class MainView extends JFrame {
 
     public JButton getUpdateMemberButton() {
         return updateMemberButton;
+    }
+
+    public JButton getSend() {
+        return send;
+    }
+
+    public JTextField getInputMessage() {
+        return inputMessage;
+    }
+
+    public JList getMessagelist() {
+        return messagelist;
     }
 
     //GroupView
@@ -68,7 +116,16 @@ public class MainView extends JFrame {
     public JButton getJoinButton() {
         return joinButton;
     }
-//    public JTextField getJoinGroupField() {
+
+    public JComboBox getComTypeBox() {
+        return comTypeBox;
+    }
+
+    public JComboBox getOrderTypeBox() {
+        return orderTypeBox;
+    }
+
+    //    public JTextField getJoinGroupField() {
 //        return joinGroupField;
 //    }
     public JPanel getGroupPanel() {
@@ -93,6 +150,80 @@ public class MainView extends JFrame {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         buildLoginView(loginPanel);
         frame.setVisible(true);
+        debugframe = new JFrame();
+    }
+    public void builddebugView (String userName){
+        debugframe.setTitle("Debugger - "+userName);
+        debugframe.setSize(700,600);
+        debugframe.setLocationRelativeTo(null);
+        debugframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        debugPanel = new JPanel();
+        debugframe.add(debugPanel);
+
+        debugPanel.setLayout(new GridBagLayout());
+
+        debugmessagesList = new JList();
+        debugmessagesList.setModel(msglistModel);
+        GridBagConstraints gbc;
+        gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridheight = 10;
+        gbc.weightx = 9.0;
+        gbc.weighty = 9.0;
+        gbc.fill = GridBagConstraints.BOTH;
+        debugPanel.add(debugmessagesList, gbc);
+
+//        JLabel labelLeft = new JLabel();
+//        labelLeft.setText("Message list");
+//        gbc.gridx = 0;
+//        gbc.gridy = 1;
+//        gbc.gridheight = 1;
+//        gbc.weightx = 1.0;
+//        gbc.weighty = 1.0;
+//        gbc.fill = GridBagConstraints.BOTH;
+//        debugPanel.add(labelLeft);
+
+        debugsendButton = new JButton();
+        debugsendButton.setText("Send");
+        gbc.gridx = 1;
+        gbc.gridy = 9;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        debugPanel.add(debugsendButton);
+
+//        debugshowButton = new JButton();
+//        debugshowButton.setText("Show");
+//        gbc.gridx = 1;
+//        gbc.gridy = 10;
+//        gbc.weightx = 1.0;
+//        gbc.weighty = 1.0;
+//        gbc.fill = GridBagConstraints.HORIZONTAL;
+//        debugPanel.add(debugshowButton);
+
+        debugqueueList = new JList();
+        debugqueueList.setModel(queuelistModel);
+//        gbc = new GridBagConstraints();
+        gbc.gridx = 2;
+        gbc.gridy = 0;
+        gbc.gridheight = 10;
+        gbc.weightx = 9.0;
+        gbc.weighty = 9.0;
+        gbc.fill = GridBagConstraints.BOTH;
+        debugPanel.add(debugqueueList, gbc);
+
+
+        debugdeliverButton = new JButton();
+        debugdeliverButton.setText("Deliver");
+        gbc.gridx = 3;
+        gbc.gridy = 10;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        debugPanel.add(debugdeliverButton);
+
+        debugframe.setVisible(true);
     }
     public void buildUserView (String userName){
         frame.setTitle("GCom Chat View: User - "+userName);
@@ -102,6 +233,8 @@ public class MainView extends JFrame {
         userView.setLayout(new GridBagLayout());
 
         messagelist = new JList();
+        DefaultListModel msgModel = new DefaultListModel();
+        messagelist.setModel(msgModel);
         GridBagConstraints gbc;
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
@@ -263,6 +396,7 @@ public class MainView extends JFrame {
         gbc.weighty = 1.0;
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
+        comTypeBox.addItem("Non reliable");
         groupPanel.add(comTypeBox, gbc);
         orderTypeBox = new JComboBox();
         gbc = new GridBagConstraints();
@@ -272,6 +406,8 @@ public class MainView extends JFrame {
         gbc.weighty = 1.0;
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
+        orderTypeBox.addItem("Unordered");
+        orderTypeBox.addItem("Causal");
         groupPanel.add(orderTypeBox, gbc);
         createButton = new JButton();
         createButton.setText("Create");

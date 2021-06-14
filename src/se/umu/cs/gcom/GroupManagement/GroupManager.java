@@ -1,5 +1,8 @@
 package se.umu.cs.gcom.GroupManagement;
 
+import se.umu.cs.gcom.Communication.Communication;
+import se.umu.cs.gcom.MessageOrdering.Message;
+import se.umu.cs.gcom.MessageOrdering.Ordering;
 import se.umu.cs.gcom.Naming.INamingService;
 
 import java.io.Serializable;
@@ -16,7 +19,7 @@ public class GroupManager implements IGroupManagement, Serializable {
     private User currentUser;
     private User leader;
     private INamingService namestub;
-
+    private Group currentGroup;
 
     public GroupManager(User currentUser, INamingService nameService) throws RemoteException {
         this.currentUser = currentUser;
@@ -26,12 +29,20 @@ public class GroupManager implements IGroupManagement, Serializable {
         memberlist.add(currentUser.getId());
     }
 
+    public Group getCurrentGroup() {
+        return currentGroup;
+    }
     public String getGroupId() {
         return groupId;
     }
 
     public void setMemberlist(List<String> memberlist) {
         this.memberlist = memberlist;
+    }
+
+    public List<String> multicast(Message msg){
+//        System.out.println("Start to multicast in "+currentGroup.getGroupName());
+        return currentGroup.getCommunicationMethod().multicast(memberlist,msg);
     }
 
     @Override
@@ -81,6 +92,27 @@ public class GroupManager implements IGroupManagement, Serializable {
                 System.out.println("Member "+mStub.getUser().getId()+" was updated.");
             } catch (Exception ignored){}
         }
+        //-------
+//        List<Group> groupList = new ArrayList<>();
+//        try {
+//            groupList = leader.getgcomstub().getUser().getGroupList();
+//        } catch (NotBoundException e) {
+//            e.printStackTrace();
+//        }
+//        System.out.println("User's group size = "+groupList.size());
+//        for (Group g:groupList){
+//            if (g.getGroupName().equals(groupId)){
+//                currentGroup = g;
+//                currentUser.addGroup(currentGroup);
+//                break;
+//            }
+//        }
+        try {
+            currentGroup = leader.getgcomstub().getUser().getGroup(groupId);
+            currentUser.addGroup(currentGroup);
+        } catch (NotBoundException e) {
+            e.printStackTrace();
+        }
 
     }
 
@@ -94,8 +126,9 @@ public class GroupManager implements IGroupManagement, Serializable {
     }
 
     @Override
-    public void createGroup(String groupId) throws RemoteException {
+    public void createGroup(String groupId, Group group) throws RemoteException {
         namestub.createGroup(groupId,currentUser);
+        currentUser.addGroup(group);
     }
 
     @Override
