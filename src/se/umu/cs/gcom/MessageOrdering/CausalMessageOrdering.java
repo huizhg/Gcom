@@ -76,27 +76,14 @@ public class CausalMessageOrdering implements Ordering, Serializable {
     @Override
     public void receive(Message message, User user) {
         if (message.getMessageType()==MessageType.NORMAL) {
-//        System.out.println("Received by ORdering.");
-//        System.out.println("IncomingClock = "+message.getVectorClock().toString());
-//        VectorClock inComingClock = message.getVectorClock();
-////        // Increase the vector clock of the process which receive the message.
-//////        System.out.println("Before Increment.");
-////        currentProcessClock.increment(message.getSender());
-//////        System.out.println("CurrentClock = "+currentProcessClock.toString());
-////        // Compare the current process's vector clock with the clock come with a message
-//        Integer incomingValue = inComingClock.getUserClock(message.getSender().getUserID());
-//        System.out.println("IncomingClock = "+message.getVectorClock().toString());
-//        Integer currentValue = currentProcessClock.getUserClock(user.getUserID());
-//        System.out.println("CurrentClock = "+currentProcessClock.toString());
+
             Message incomingMsg = message;
             deliverQueue.put(message);
-//        Boolean checkFlag = checkIncomingMsg(message, user);
-//        System.out.println("Flag?"+checkFlag);
+
             while (checkIncomingMsg(incomingMsg, user)) {
                 VectorClock inComingClock = incomingMsg.getVectorClock();
                 currentProcessClock.update(inComingClock);
-//            System.out.println("Update is done.");
-//            System.out.println("Deliver queue size = "+deliverQueue.size());
+
                 try {
                     messagesQueue.put(incomingMsg);
                     deliverQueue.remove(incomingMsg);
@@ -105,7 +92,7 @@ public class CausalMessageOrdering implements Ordering, Serializable {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-//            currentProcessClock.increment(user);
+
                 if (incomingMsg == null) {
 //                if (deliverQueue.isEmpty()){
 //                    deliverClock.update(currentProcessClock);
@@ -113,31 +100,7 @@ public class CausalMessageOrdering implements Ordering, Serializable {
                     break;
                 }
             }
-//        while (incomingValue == currentValue + 1){
 
-//        }
-
-//        try {
-//            VectorClock newClock = currentProcessClock.copy();
-//            message.setVectorClock(newClock);
-//        } catch (CloneNotSupportedException e) {
-//            e.printStackTrace();
-//        }
-
-
-//        ArrayList<Message> msglist = new ArrayList<>();
-//        System.out.println("Queue size = "+deliverQueue.size());
-
-//        Object[] msgArray = deliverQueue.toArray();
-//        for (Object m: msgArray){
-//            System.out.println(m.toString());
-//        }
-//        deliverQueue.drainTo(msglist);
-//        System.out.println("Start to print.");
-//        for (Message m:msglist){
-//            System.out.println(m.toString());
-//        }
-//        System.out.println("Queue size = "+deliverQueue.size());
         }
         else {
             try {
@@ -156,25 +119,10 @@ public class CausalMessageOrdering implements Ordering, Serializable {
 
     @Override
     public Message createMsg(Message message) {
-//        System.out.println("Vector Clock!");
-//        VectorClock oldclock = null;
-//        try {
-//            oldclock = currentProcessClock.copy();
-//            oldclock.increment(message.getSender());
-//        } catch (CloneNotSupportedException e) {
-//            e.printStackTrace();
-//        }
-//        message.setVectorClock(oldclock);
 
-//        VectorClock inComingClock = message.getVectorClock();
-        // Increase the vector clock of the process which receive the message.
-//        System.out.println("Before Increment.");
         currentProcessClock.increment(message.getSender());
-////        System.out.println("CurrentClock = "+currentProcessClock.toString());
-//        // Compare the current process's vector clock with the clock come with a message
-//        currentProcessClock.update(inComingClock);
+
         try {
-//            System.out.println("In the try?");
             VectorClock newClock = currentProcessClock.copy();
             message.setVectorClock(newClock);
         } catch (CloneNotSupportedException e) {

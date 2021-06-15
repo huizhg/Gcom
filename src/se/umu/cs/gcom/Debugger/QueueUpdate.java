@@ -5,13 +5,6 @@ import se.umu.cs.gcom.MessageOrdering.Ordering;
 import javax.swing.*;
 import java.util.List;
 
-//import se.umu.cs.gcom.MessageOrdering.Message;
-//import se.umu.cs.gcom.MessageOrdering.Ordering;
-//
-//import javax.swing.*;
-//import java.util.List;
-//import java.util.concurrent.LinkedBlockingDeque;
-//
 public class QueueUpdate extends SwingWorker<Void, DefaultListModel<String>> {
 
     private Ordering ordering;

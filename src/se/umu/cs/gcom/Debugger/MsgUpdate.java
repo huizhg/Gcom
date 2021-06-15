@@ -20,11 +20,9 @@ public class MsgUpdate extends SwingWorker<Void, Message> {
 
     @Override
     protected Void doInBackground() throws Exception {
-//        System.out.println("MsgUpdate start.");
+
         while(!isCancelled()){
-//            System.out.println("Running?");
             Message msg = groupManager.getCurrentGroup().getOrderingMethod().deliver();
-//            System.out.println(msg.toString());
             publish(msg);
 //            Thread.sleep(1000);
         }
