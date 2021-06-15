@@ -67,11 +67,7 @@ public class GroupManager implements IGroupManagement, Serializable {
             if(!leaderFlag){
                 mList.add(currentUser.getId());
             }
-//            System.out.println("Start to print mlist");
-//            for(String m:mList){
-//                System.out.println(m);
-//            }
-//            System.out.println("Done for mList");
+
         } catch (NotBoundException e) {
             System.out.println("Registered Leader goes down.");
         }
@@ -85,30 +81,11 @@ public class GroupManager implements IGroupManagement, Serializable {
                 Registry registry = LocateRegistry.getRegistry(8888);
                 IGComService mStub = (IGComService) registry.lookup(m);
                 mStub.updateMemberlist(liveM);
-//                System.out.println("Start to update ---");
-//                System.out.println("Start to print mlist");
-//                for(String m1:mList){
-//                    System.out.println(m1);
-//                }
-//                System.out.println("Done for mList");
+
                 System.out.println("Member "+mStub.getUser().getId()+" was updated.");
             } catch (Exception ignored){}
         }
-        //-------
-//        List<Group> groupList = new ArrayList<>();
-//        try {
-//            groupList = leader.getgcomstub().getUser().getGroupList();
-//        } catch (NotBoundException e) {
-//            e.printStackTrace();
-//        }
-//        System.out.println("User's group size = "+groupList.size());
-//        for (Group g:groupList){
-//            if (g.getGroupName().equals(groupId)){
-//                currentGroup = g;
-//                currentUser.addGroup(currentGroup);
-//                break;
-//            }
-//        }
+
         try {
             currentGroup = leader.getgcomstub().getUser().getGroup(groupId);
             currentUser.addGroup(currentGroup);
@@ -120,7 +97,6 @@ public class GroupManager implements IGroupManagement, Serializable {
 
     @Override
     public void leaveGroup() throws RemoteException {
-//        removeMember(currentUser);
         if(memberlist.size()==1){
             System.out.println("Remove Group = "+groupId);
             removeGroup(groupId);
@@ -172,7 +148,6 @@ public class GroupManager implements IGroupManagement, Serializable {
                 System.out.println("Member "+mStub.getUser().getId()+" was updated.");
             } catch (Exception ignored){}
         }
-//        }
     }
 
     @Override
@@ -258,9 +233,6 @@ public class GroupManager implements IGroupManagement, Serializable {
                 DeadM.add(m);
             }
         }
-//        for (String l:liveM){
-//            System.out.println("Live - "+liveM);
-//        }
         setMemberlist(liveM);
         Map<Integer,List<String>> map= new HashMap<>();
         map.put(1,liveM);

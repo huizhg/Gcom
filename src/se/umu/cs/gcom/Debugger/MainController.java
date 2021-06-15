@@ -23,9 +23,8 @@ public class MainController {
     private User user;
     private GroupManager groupManager;
     private IGComService gComService;
-//    private Communication communicationMethod;
     private Ordering orderingMethod;
-//    private Group group;
+
 
     private Registry registry;
     private INamingService nameStub;
@@ -44,7 +43,6 @@ public class MainController {
     private void groupController(){
         groupUpdate = new GroupUpdate(nameStub,mainView.getGrouplistField());
         groupUpdate.execute();
-//        updateGrouplist();
         createButtonListener();
         removeButtionListener();
         joinButtionListener();
@@ -58,7 +56,6 @@ public class MainController {
 
         groupManager.notifyMemberJoined(user);
 
-//        updateMemberList();
         updateMemberButtonListener();
         leaveButtonListenser();
         debugButtionListener();
@@ -70,14 +67,9 @@ public class MainController {
             String msgContent = mainView.getInputMessage().getText();
             Message msg = new Message(user,MessageType.NORMAL,msgContent);
             msg = orderingMethod.createMsg(msg);
-//            VectorClock clock = new VectorClock();
-//            clock.initialize(user);
-//            clock.increment(user);
-//            msg.setVectorClock(clock);
-//            System.out.println("Msg was built."+groupManager.getGroupId());
+
             if(mainView.getDebugframe().isVisible()){
                 mainView.msglistModel.addElement(msg);
-//                msgUpdate.cancel(true);
             }else {
                 System.out.println("Multicast");
                 groupManager.multicast(msg);
@@ -109,9 +101,7 @@ public class MainController {
     private void leaveButtonListenser(){
         mainView.getLeaveButton().addActionListener(e -> {
             msgUpdate.cancel(true);
-//            System.out.println("Out of try");
             try {
-//                System.out.println("In the try");
                 groupManager.leaveGroup();
 
             } catch (RemoteException remoteException) {
@@ -122,7 +112,6 @@ public class MainController {
             mainView.getUserView().setEnabled(false);
             mainView.getUserView().setVisible(false);
             if (mainView.getDebugframe().isVisible()){
-//                System.out.println("Dispose!");
                 System.exit(1);
             }
         });
@@ -130,7 +119,6 @@ public class MainController {
     private void debugButtionListener(){
         mainView.getDebugButton().addActionListener(e -> {
             String username = user.getId();
-//            System.out.println(username);
 
             mainView.builddebugView(username);
 
@@ -140,7 +128,6 @@ public class MainController {
             mainView.getDebugsendButton().addActionListener(e1 -> {
                 System.out.println("Debug Send was clicked.");
                 Integer msgNum = mainView.getDebugmessagesList().getSelectedIndex();
-//                System.out.println("Selected index = "+msgNum.toString());
                 Message msg = (Message) mainView.getDebugmessagesList().getSelectedValue();
                 System.out.println("Sent Msg = "+msg.toString());
                 groupManager.multicast(msg);
@@ -155,30 +142,7 @@ public class MainController {
     }
     private void updateMemberButtonListener(){
         mainView.getUpdateMemberButton().addActionListener(e -> {
-//            updateMemberList();
-//            try {
-//                Message msg = gComService.getGroupManager().getCurrentGroup().getOrderingMethod().deliver();
-//                System.out.println(msg.toString());
-//            } catch (InterruptedException | RemoteException interruptedException) {
-//                interruptedException.printStackTrace();
-//            }
-
-
-//            System.out.println("Update member list");
-//            List<String> liveM = new ArrayList<>();
-//            try {
-//                Map<Integer, List<String>> map = groupManager.liveCheck();
-//                liveM = map.get(1);
-//            } catch (RemoteException remoteException) {
-//                remoteException.printStackTrace();
-//            }
-//
-//            DefaultListModel<String> mListModel = new DefaultListModel<>();
-//            for (String m:liveM){
-//                mListModel.addElement(m);
-//            }
-//            mainView.getMemberlist().setModel(mListModel);
-
+            updateMemberList();
         });
     }
     private void updateMemberList(){
@@ -200,7 +164,6 @@ public class MainController {
     private void joinButtionListener(){
         mainView.getJoinButton().addActionListener(e -> {
             String groupName = (String) mainView.getGrouplistField().getSelectedValue();
-//            String groupName = mainView.getJoinGroupField().getText();
             joinGroupAction(groupName);
         });
     }
@@ -210,8 +173,7 @@ public class MainController {
             groupManager.joinGroup(groupName);
             username = user.getId();
             System.out.println("Join Group: "+ groupName+", User: "+username);
-            //---
-//                updateGrouplist();
+
             mainView.getGroupPanel().setEnabled(false);
             mainView.getGroupPanel().setVisible(false);
             mainView.buildUserView(username);
@@ -248,27 +210,15 @@ public class MainController {
                 createdGroup.setOrderingMethod(new CausalMessageOrdering());
             }
 
-//            List<String> grouplist = new ArrayList<>();
             try {
                 groupManager.createGroup(groupName,createdGroup);
                 System.out.println("Create Group: "+ groupName+", leader: "+user.getId());
-//                grouplist = nameStub.getAllGroups();
             } catch (RemoteException remoteException) {
                 System.out.println("Failed to create group.");
                 remoteException.printStackTrace();
             }
             updateGrouplist();
-//            try {
-//                updategrouplist();
-//                System.out.println("Group list was updated.");
-//            } catch (RemoteException remoteException) {
-//                System.out.println("Failed to update group list.");
-//            }
-//            DefaultListModel<String> grouplistmodel = new DefaultListModel<>();
-//            for (String g: grouplist){
-//                grouplistmodel.addElement(g);
-//            }
-//            mainView.getGrouplistField().setModel(grouplistmodel);
+
         });
     }
 

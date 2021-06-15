@@ -19,11 +19,7 @@ public class UnorderedMessageOrdering implements Ordering, Serializable {
         System.out.println("Ordering Receive.");
         System.out.println("Content = "+ message.toString());
         messagesQueue.put(message);
-//        System.out.println("Receive size = "+messagesQueue.size());
-//        Object[] msgArray = messagesQueue.toArray();
-//        for (Object m: msgArray){
-//            System.out.println(m.toString());
-//        }
+
     }
 
     @Override

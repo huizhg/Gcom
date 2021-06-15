@@ -14,6 +14,4 @@ public abstract class Communication implements Serializable {
 
     }
     abstract public List<String> multicast(List<String> memberlist, Message message);
-//    abstract public void receive(Message message, User user) throws InterruptedException;
-//    abstract public Message deliver() throws InterruptedException;
 }

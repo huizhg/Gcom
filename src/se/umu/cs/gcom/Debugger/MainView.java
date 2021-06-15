@@ -142,9 +142,6 @@ public class MainView extends JFrame {
         return orderTypeBox;
     }
 
-    //    public JTextField getJoinGroupField() {
-//        return joinGroupField;
-//    }
     public JPanel getGroupPanel() {
         return groupPanel;
     }
@@ -191,16 +188,6 @@ public class MainView extends JFrame {
         gbc.fill = GridBagConstraints.BOTH;
         debugPanel.add(debugmessagesList, gbc);
 
-//        JLabel labelLeft = new JLabel();
-//        labelLeft.setText("Message list");
-//        gbc.gridx = 0;
-//        gbc.gridy = 1;
-//        gbc.gridheight = 1;
-//        gbc.weightx = 1.0;
-//        gbc.weighty = 1.0;
-//        gbc.fill = GridBagConstraints.BOTH;
-//        debugPanel.add(labelLeft);
-
         debugsendButton = new JButton();
         debugsendButton.setText("Send");
         gbc.gridx = 1;
@@ -209,15 +196,6 @@ public class MainView extends JFrame {
         gbc.weighty = 1.0;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         debugPanel.add(debugsendButton);
-
-//        debugshowButton = new JButton();
-//        debugshowButton.setText("Show");
-//        gbc.gridx = 1;
-//        gbc.gridy = 10;
-//        gbc.weightx = 1.0;
-//        gbc.weighty = 1.0;
-//        gbc.fill = GridBagConstraints.HORIZONTAL;
-//        debugPanel.add(debugshowButton);
 
         debugqueueList = new JList();
         debugqueueList.setModel(queuelistModel);
@@ -378,24 +356,7 @@ public class MainView extends JFrame {
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         groupPanel.add(createGroupField, gbc);
-//        joinGroupLabel = new JLabel();
-//        joinGroupLabel.setText("Join Group");
-//        gbc = new GridBagConstraints();
-//        gbc.gridx = 2;
-//        gbc.gridy = 0;
-//        gbc.weightx = 1.0;
-//        gbc.weighty = 1.0;
-//        gbc.anchor = GridBagConstraints.WEST;
-//        groupPanel.add(joinGroupLabel, gbc);
-//        joinGroupField = new JTextField();
-//        gbc = new GridBagConstraints();
-//        gbc.gridx = 3;
-//        gbc.gridy = 0;
-//        gbc.weightx = 1.0;
-//        gbc.weighty = 1.0;
-//        gbc.anchor = GridBagConstraints.WEST;
-//        gbc.fill = GridBagConstraints.HORIZONTAL;
-//        groupPanel.add(joinGroupField, gbc);
+
         orderingLabel = new JLabel();
         orderingLabel.setText("Ordering");
         gbc = new GridBagConstraints();
@@ -467,8 +428,6 @@ public class MainView extends JFrame {
         gbc.fill = GridBagConstraints.BOTH;
         groupPanel.add(grouplistField, gbc);
 
-//        userPanel.setEnabled(true);
-//        userPanel.setVisible(true);
     }
     private void buildLoginView(JPanel loginPanel) {
 
