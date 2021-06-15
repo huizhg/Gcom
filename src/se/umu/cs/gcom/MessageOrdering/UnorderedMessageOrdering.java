@@ -16,7 +16,8 @@ public class UnorderedMessageOrdering implements Ordering, Serializable {
 
     @Override
     public void receive(Message message, User user) throws InterruptedException {
-//        System.out.println("Ordering Receive.");
+        System.out.println("Ordering Receive.");
+        System.out.println("Content = "+ message.toString());
         messagesQueue.put(message);
 //        System.out.println("Receive size = "+messagesQueue.size());
 //        Object[] msgArray = messagesQueue.toArray();

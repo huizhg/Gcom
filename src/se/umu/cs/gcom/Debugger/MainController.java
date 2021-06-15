@@ -56,11 +56,15 @@ public class MainController {
         msgUpdate = new MsgUpdate(groupManager,mainView.getMessagelist());
         msgUpdate.execute();
 
+        groupManager.notifyMemberJoined(user);
+
 //        updateMemberList();
         updateMemberButtonListener();
+        leaveButtonListenser();
         debugButtionListener();
+        removeMButtonListener();
+        addMButtonListener();
         orderingMethod = groupManager.getCurrentGroup().getOrderingMethod();
-
 
         mainView.getSend().addActionListener(e -> {
             String msgContent = mainView.getInputMessage().getText();
@@ -73,10 +77,53 @@ public class MainController {
 //            System.out.println("Msg was built."+groupManager.getGroupId());
             if(mainView.getDebugframe().isVisible()){
                 mainView.msglistModel.addElement(msg);
-                msgUpdate.cancel(true);
+//                msgUpdate.cancel(true);
             }else {
                 System.out.println("Multicast");
                 groupManager.multicast(msg);
+            }
+        });
+    }
+    private void addMButtonListener(){
+        mainView.getAddMemberButton().addActionListener(e -> {
+            String memberName = (String) mainView.getInputMessage().getText();
+            try {
+                groupManager.addMember(memberName);
+            } catch (RemoteException remoteException) {
+                remoteException.printStackTrace();
+            }
+            updateMemberList();
+        });
+    }
+    private void removeMButtonListener(){
+        mainView.getRemoveMemberButton().addActionListener(e -> {
+            String memberName = (String) mainView.getMemberlist().getSelectedValue();
+            try {
+                groupManager.removeMember(memberName);
+            } catch (RemoteException remoteException) {
+                remoteException.printStackTrace();
+            }
+            updateMemberList();
+        });
+    }
+    private void leaveButtonListenser(){
+        mainView.getLeaveButton().addActionListener(e -> {
+            msgUpdate.cancel(true);
+//            System.out.println("Out of try");
+            try {
+//                System.out.println("In the try");
+                groupManager.leaveGroup();
+
+            } catch (RemoteException remoteException) {
+                remoteException.printStackTrace();
+            }
+            mainView.getGroupPanel().setEnabled(true);
+            mainView.getGroupPanel().setVisible(true);
+            mainView.getUserView().setEnabled(false);
+            mainView.getUserView().setVisible(false);
+            if (mainView.getDebugframe().isVisible()){
+//                System.out.println("Dispose!");
+                System.exit(1);
             }
         });
     }

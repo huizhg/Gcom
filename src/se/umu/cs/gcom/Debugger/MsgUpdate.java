@@ -24,6 +24,7 @@ public class MsgUpdate extends SwingWorker<Void, Message> {
         while(!isCancelled()){
 //            System.out.println("Running?");
             Message msg = groupManager.getCurrentGroup().getOrderingMethod().deliver();
+//            System.out.println(msg.toString());
             publish(msg);
 //            Thread.sleep(1000);
         }
@@ -36,11 +37,14 @@ public class MsgUpdate extends SwingWorker<Void, Message> {
     protected void process(List<Message> chunks) {
 
         for (Message m:chunks){
+            DefaultListModel msgListModel = (DefaultListModel) msglist.getModel();
             if (m.getMessageType().equals(MessageType.NORMAL)){
-                DefaultListModel msgListModel = (DefaultListModel) msglist.getModel();
                 msgListModel.addElement(m.toString());
                 msglist.setModel(msgListModel);
                 System.out.println("Msg updated.");
+            }else {
+                msgListModel.addElement(m.getMessageContent());
+                System.out.println("Notification Updated.");
             }
         }
     }

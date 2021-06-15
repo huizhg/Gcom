@@ -13,11 +13,11 @@ public interface IGroupManagement {
 //    void createGroup(String groupId) throws RemoteException;
     void removeGroup(String groupId) throws RemoteException;
 
-    void addMember(User member) throws RemoteException;
-    void removeMember(User member) throws RemoteException;
+    void addMember(String memberName) throws RemoteException;
+    void removeMember(String memberName) throws RemoteException;
     //3
-    void notifyMemberJoined(User member) throws RemoteException;
-    void notifyMemberLeft(User member) throws RemoteException;
+    void notifyMemberJoined(User member);
+    void notifyMemberLeft(User member);
     //4
     List<String> getAllMembers() throws RemoteException;
 //    List<String> getAllMembers(String groupId) throws RemoteException;

@@ -37,7 +37,6 @@ public class GComService extends UnicastRemoteObject implements IGComService {
     @Override
     public void sendMessage(Message msg) throws RemoteException {
         System.out.println("GCOM send message to ordering = "+msg.getMessageContent());
-
         this.orderingMethod = groupManager.getCurrentGroup().getOrderingMethod();
         try {
 //            msg = orderingMethod.createMsg(msg);

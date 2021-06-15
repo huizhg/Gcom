@@ -76,6 +76,19 @@ public class MainView extends JFrame {
     }
 
     //UserView
+
+    public JButton getRemoveMemberButton() {
+        return removeMemberButton;
+    }
+
+    public JButton getAddMemberButton() {
+        return addMemberButton;
+    }
+
+    public JPanel getUserView() {
+        return userView;
+    }
+
     public JList getMemberlist() {
         return memberlist;
     }
@@ -98,6 +111,10 @@ public class MainView extends JFrame {
 
     public JList getMessagelist() {
         return messagelist;
+    }
+
+    public JButton getLeaveButton() {
+        return leaveButton;
     }
 
     //GroupView

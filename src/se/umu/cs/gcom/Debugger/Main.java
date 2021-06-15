@@ -13,6 +13,5 @@ public class Main {
                 MainController testController = new MainController(testView);
             }
         });
-
     }
 }

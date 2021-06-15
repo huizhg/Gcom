@@ -17,9 +17,13 @@ public class VectorClock implements Comparable<VectorClock>, Serializable {
         this.clock = clock;
     }
 
-//    public void initialize(User user) {
-//        clock.put(user.getUserID(), 0);
-//    }
+    public HashMap<UUID, Integer> getClock() {
+        return clock;
+    }
+
+    public void initialize(UUID userID) {
+        clock.put(userID, 0);
+    }
 
     public void increment(User user) {
 //        System.out.println("User ID = "+user.getUserID());
@@ -37,6 +41,9 @@ public class VectorClock implements Comparable<VectorClock>, Serializable {
         clock.remove(user.getUserID());
     }
 
+    public Integer getUserClock(UUID userID){
+        return this.clock.get(userID);
+    }
     /**
      * @param otherClock When a process receive a message and it's vector clock from another process, compare the vector
      *                   clock of current process with the received clock and update the clock of current process.
@@ -63,15 +70,18 @@ public class VectorClock implements Comparable<VectorClock>, Serializable {
     public boolean lessThan(VectorClock otherClock) {
         HashSet<UUID> ourSet = new HashSet<>(this.clock.keySet());
         ourSet.addAll(otherClock.clock.keySet());
-
-        for (UUID userID : ourSet
-        ) {
+        
+        for (UUID userID : ourSet){
             clock.putIfAbsent(userID, 0);
             otherClock.clock.putIfAbsent(userID, 0);
+        }
+
+        for (UUID userID : ourSet) {
             if (clock.get(userID) > otherClock.clock.get(userID)) {
                 return false;
+            }else if (clock.get(userID) < otherClock.clock.get(userID)){
+                return true;
             }
-
         }
         return true;
 
