@@ -8,7 +8,7 @@ public class NamingServer {
         try {
             INamingService namingService = new NamingService();
             // creatRegistry is different from getRegistry.
-            Registry registry = LocateRegistry.createRegistry(8888);
+            Registry registry = LocateRegistry.getRegistry(8888);
             registry.rebind("NamingService", namingService);
             System.out.println("The name server is bound successfully！");
         } catch (Exception e) {
