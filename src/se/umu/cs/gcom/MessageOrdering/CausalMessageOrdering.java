@@ -75,6 +75,7 @@ public class CausalMessageOrdering implements Ordering, Serializable {
 
     @Override
     public void receive(Message message, User user) {
+        message.updateMsgPath("-Causal");
         if (message.getMessageType()==MessageType.NORMAL) {
 
             Message incomingMsg = message;
@@ -120,6 +121,7 @@ public class CausalMessageOrdering implements Ordering, Serializable {
     @Override
     public Message createMsg(Message message) {
 
+        message.updateMsgPath("-AddClock");
         currentProcessClock.increment(message.getSender());
 
         try {
@@ -151,6 +153,7 @@ public class CausalMessageOrdering implements Ordering, Serializable {
 
 
     private class MessageComparator implements Comparator<Message>,Serializable {
+        private static final long serialVersionUID = -4365651154312787320L;
 
         @Override
         public int compare(Message message1, Message message2) {

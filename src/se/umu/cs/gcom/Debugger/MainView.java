@@ -52,8 +52,12 @@ public class MainView extends JFrame {
     public DefaultListModel<Message> msglistModel = new DefaultListModel<>();
     public DefaultListModel<String> queuelistModel = new DefaultListModel<>();
 
-    //DebugView
-
+    //BackendView
+    private JFrame backendframe = new JFrame();
+    private JLabel DeliverdMsg;
+    public JList BackendArea = new JList();
+    private JLabel Performance;
+    public JList PerformanceArea = new JList();
 
     public JButton getDebugdeliverButton() {
         return debugdeliverButton;
@@ -165,10 +169,14 @@ public class MainView extends JFrame {
         buildLoginView(loginPanel);
         frame.setVisible(true);
         debugframe = new JFrame();
+        DefaultListModel mModel = new DefaultListModel();
+        BackendArea.setModel(mModel);
+        DefaultListModel pModel = new DefaultListModel();
+        PerformanceArea.setModel(pModel);
     }
     public void builddebugView (String userName){
         debugframe.setTitle("Debugger - "+userName);
-        debugframe.setSize(700,600);
+        debugframe.setSize(1400,600);
         debugframe.setLocationRelativeTo(null);
         debugframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         debugPanel = new JPanel();
@@ -219,6 +227,52 @@ public class MainView extends JFrame {
         debugPanel.add(debugdeliverButton);
 
         debugframe.setVisible(true);
+    }
+    public void buildbackendView(){
+        backendframe.setTitle("Backend");
+        backendframe.setSize(700,600);
+        backendframe.setLocationRelativeTo(null);
+        backendframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+
+        final JPanel panel1 = new JPanel();
+        backendframe.add(panel1);
+
+        panel1.setLayout(new GridBagLayout());
+        DeliverdMsg = new JLabel();
+        DeliverdMsg.setText("DeliverdMsg");
+        GridBagConstraints gbc;
+        gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.weightx = 1.0;
+        gbc.anchor = GridBagConstraints.WEST;
+        panel1.add(DeliverdMsg, gbc);
+        gbc = new GridBagConstraints();
+
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        gbc.fill = GridBagConstraints.BOTH;
+        panel1.add(BackendArea, gbc);
+        Performance = new JLabel();
+        Performance.setText("Performance");
+        gbc = new GridBagConstraints();
+        gbc.gridx = 1;
+        gbc.gridy = 0;
+        gbc.weightx = 1.0;
+        gbc.anchor = GridBagConstraints.WEST;
+        panel1.add(Performance, gbc);
+
+        gbc = new GridBagConstraints();
+        gbc.gridx = 1;
+        gbc.gridy = 1;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        gbc.fill = GridBagConstraints.BOTH;
+        panel1.add(PerformanceArea, gbc);
+        backendframe.setVisible(true);
     }
     public void buildUserView (String userName){
         frame.setTitle("GCom Chat View: User - "+userName);

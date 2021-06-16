@@ -1,5 +1,6 @@
 package se.umu.cs.gcom.MessageOrdering;
 
+import se.umu.cs.gcom.Debugger.MsgUpdate;
 import se.umu.cs.gcom.GroupManagement.User;
 
 import javax.swing.*;
@@ -16,8 +17,9 @@ public class UnorderedMessageOrdering implements Ordering, Serializable {
 
     @Override
     public void receive(Message message, User user) throws InterruptedException {
-        System.out.println("Ordering Receive.");
-        System.out.println("Content = "+ message.toString());
+        message.updateMsgPath("-Unordered");
+//        System.out.println("Ordering Receive.");
+//        System.out.println("Content = "+ message.toString());
         messagesQueue.put(message);
 
     }

@@ -51,7 +51,7 @@ public class MainController {
         memberUpdate = new MemberUpdate(groupManager,mainView.getMemberlist());
         memberUpdate.execute();
 
-        msgUpdate = new MsgUpdate(groupManager,mainView.getMessagelist());
+        msgUpdate = new MsgUpdate(groupManager,mainView.getMessagelist(),mainView.BackendArea,mainView.PerformanceArea);
         msgUpdate.execute();
 
         groupManager.notifyMemberJoined(user);
@@ -134,8 +134,7 @@ public class MainController {
                 mainView.msglistModel.remove(msgNum);
             });
             mainView.getDebugdeliverButton().addActionListener(e2 -> {
-                msgUpdate = new MsgUpdate(groupManager,mainView.getMessagelist());
-                msgUpdate.execute();
+                mainView.buildbackendView();
 
             });
         });

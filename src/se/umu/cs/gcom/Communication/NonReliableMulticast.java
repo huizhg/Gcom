@@ -21,6 +21,8 @@ public class NonReliableMulticast extends Communication{
     @Override
     public List<String> multicast(List<String> mlist, Message msg) {
         List<String> failedlist = new ArrayList<>();
+        msg.updateMsgPath("-Multicast");
+        msg.setPerformance(mlist.size());
         for (String m:mlist){
 //            System.out.println("member = "+m);
             try {
