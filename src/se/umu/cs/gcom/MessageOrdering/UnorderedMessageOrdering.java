@@ -1,7 +1,7 @@
 package se.umu.cs.gcom.MessageOrdering;
 
-import se.umu.cs.gcom.Debugger.MsgUpdate;
-import se.umu.cs.gcom.GroupManagement.User;
+import se.umu.cs.gcom.GCom.Message;
+import se.umu.cs.gcom.GCom.User;
 
 import javax.swing.*;
 import java.io.Serializable;
@@ -9,7 +9,7 @@ import java.util.concurrent.LinkedBlockingDeque;
 
 public class UnorderedMessageOrdering implements Ordering, Serializable {
     private static final long serialVersionUID = -1374620059951208354L;
-    private LinkedBlockingDeque<Message> messagesQueue;
+    private final LinkedBlockingDeque<Message> messagesQueue;
     public UnorderedMessageOrdering(){
         messagesQueue = new LinkedBlockingDeque<>(11);
     }
@@ -18,24 +18,19 @@ public class UnorderedMessageOrdering implements Ordering, Serializable {
     @Override
     public void receive(Message message, User user) throws InterruptedException {
         message.updateMsgPath("-Unordered");
-//        System.out.println("Ordering Receive.");
-//        System.out.println("Content = "+ message.toString());
         messagesQueue.put(message);
 
     }
 
     @Override
     public Message deliver() throws InterruptedException {
-//        System.out.println("Ordering Deliver");
-//        System.out.println("Deliver Size :"+messagesQueue.size());
         return messagesQueue.take();
 
     }
 
     @Override
-    public Message createMsg (Message message)
+    public Message prepareMsg(Message message)
     {
-//        System.out.println("A normal message without vector clock.");
         return message;
     }
 

@@ -1,4 +1,4 @@
-package se.umu.cs.gcom.Debugger;
+package se.umu.cs.gcom.Client;
 
 import se.umu.cs.gcom.Naming.INamingService;
 
@@ -24,7 +24,7 @@ public class GroupUpdate extends SwingWorker<Void, List<String>> {
                 groupList = nameStub.getAllGroups();
 //                System.out.println("Group list was updated.");
             } catch (RemoteException e) {
-                System.out.println("Failed to update group list.");
+//                System.out.println("Failed to update group list.");
             }
             publish(groupList);
 

@@ -1,12 +1,8 @@
 package se.umu.cs.gcom.GroupManagement;
 
-import se.umu.cs.gcom.Communication.Communication;
-import se.umu.cs.gcom.MessageOrdering.Message;
-import se.umu.cs.gcom.MessageOrdering.MessageType;
-import se.umu.cs.gcom.MessageOrdering.Ordering;
+import se.umu.cs.gcom.GCom.*;
 import se.umu.cs.gcom.Naming.INamingService;
 
-import javax.xml.bind.SchemaOutputResolver;
 import java.io.Serializable;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -23,6 +19,12 @@ public class GroupManager implements IGroupManagement, Serializable {
     private INamingService namestub;
     private Group currentGroup;
 
+    public GroupManager(User currentUser) throws RemoteException{
+        this.currentUser = currentUser;
+        this.memberlist = new ArrayList<>();
+        memberlist.add(currentUser.getId());
+    }
+
     public GroupManager(User currentUser, INamingService nameService) throws RemoteException {
         this.currentUser = currentUser;
         this.namestub = nameService;
@@ -31,32 +33,47 @@ public class GroupManager implements IGroupManagement, Serializable {
         memberlist.add(currentUser.getId());
     }
 
-    public Group getCurrentGroup() {
-        return currentGroup;
+    public INamingService getNamestub() {
+        return namestub;
     }
+
     public String getGroupId() {
         return groupId;
+    }
+
+    public Group getCurrentGroup() {
+        return currentGroup;
     }
 
     public void setMemberlist(List<String> memberlist) {
         this.memberlist = memberlist;
     }
 
-    public List<String> multicast(Message msg){
-//        System.out.println("Start to multicast in "+currentGroup.getGroupName());
-        return currentGroup.getCommunicationMethod().multicast(memberlist,msg);
-    }
 
     @Override
-    public void joinGroup(String groupId) throws RemoteException {
-        this.groupId = groupId;
-
-        User leaderNaming = namestub.getLeader(groupId);
-        leader = leaderNaming;
-        System.out.println("Naming = "+leaderNaming.getId());
-        System.out.println("Curr = "+currentUser.getId());
-
-        boolean leaderFlag = leadercheck(leaderNaming);
+    public void joinGroup(String groupId,String leaderId) throws RemoteException {
+        boolean leaderFlag = false;
+        if (groupId!=null){
+            System.out.println("WithNaming");
+            this.groupId = groupId;
+            User leaderNaming = namestub.getLeader(groupId);
+            this.leader = leaderNaming;
+            System.out.println("Naming = "+leaderNaming.getId());
+            System.out.println("Curr = "+currentUser.getId());
+            leaderFlag = leadercheck(leaderNaming);
+        }else {
+            System.out.println("WithoutNaming");
+            Registry registry = LocateRegistry.getRegistry(8888);
+            IGComService mStub;
+            try {
+                mStub = (IGComService) registry.lookup(leaderId);
+                this.leader = mStub.getGroupManager().getLeader();
+                this.groupId = mStub.getGroupManager().getGroupId();
+                leaderFlag = leadercheck(leader);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
 
         System.out.println("leaderFlag - "+leaderFlag);
 
@@ -87,9 +104,9 @@ public class GroupManager implements IGroupManagement, Serializable {
         }
 
         try {
-            currentGroup = leader.getgcomstub().getUser().getGroup(groupId);
+            currentGroup = leader.getgcomstub().getUser().getGroup(this.groupId);
             currentUser.addGroup(currentGroup);
-        } catch (NotBoundException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -101,7 +118,6 @@ public class GroupManager implements IGroupManagement, Serializable {
             System.out.println("Remove Group = "+groupId);
             removeGroup(groupId);
         }else {
-            notifyMemberLeft(currentUser);
             removeMember(currentUser.getId());
             this.memberlist.clear();
             this.memberlist.add(currentUser.getId());
@@ -113,8 +129,7 @@ public class GroupManager implements IGroupManagement, Serializable {
                     IGComService mStub = (IGComService) registry.lookup(newLeaderName);
                     User newLeader = mStub.getUser();
                     namestub.updateGroup(groupId,newLeader);
-                } catch (NotBoundException e) {
-                    e.printStackTrace();
+                } catch (NotBoundException ignored) {
                 }
             }else {
                 System.out.println("False leader.");
@@ -125,13 +140,24 @@ public class GroupManager implements IGroupManagement, Serializable {
 
     @Override
     public void createGroup(String groupId, Group group) throws RemoteException {
-        namestub.createGroup(groupId,currentUser);
+        try {
+            namestub.createGroup(groupId,currentUser);
+        }catch (Exception e){
+            leader = currentUser;
+            this.groupId = groupId;
+            System.out.println("namestub down.");
+        }
         currentUser.addGroup(group);
     }
 
     @Override
     public void removeGroup(String groupId) throws RemoteException {
-        namestub.deleteGroup(groupId);
+        try {
+            namestub.deleteGroup(groupId);
+        }catch (Exception ignored){
+
+        }
+        currentUser.removeGroup(groupId);
     }
 
 
@@ -165,29 +191,14 @@ public class GroupManager implements IGroupManagement, Serializable {
         }
     }
 
-    @Override
-    public void notifyMemberJoined(User member) {
-        String content = "Notification: "+member.getId()+" joins Group - "+groupId;
-        Message msg = new Message(member, MessageType.Notify,content);
-//        System.out.println("Ready to send join notification.");
-        multicast(msg);
-    }
 
     @Override
-    public void notifyMemberLeft(User member) {
-        String content = "Notification: "+member.getId()+" leaves Group - " +groupId;
-        Message msg = new Message(member, MessageType.Notify,content);
-//        System.out.println("Ready to send leave notification.");
-        multicast(msg);
-    }
-
-    @Override
-    public List<String> getAllMembers() throws RemoteException {
+    public List<String> getAllMembers()  {
         return this.memberlist;
     }
 
     @Override
-    public User getLeader(String groupId) throws RemoteException {
+    public User getLeader() {
         return this.leader;
     }
 
@@ -202,25 +213,17 @@ public class GroupManager implements IGroupManagement, Serializable {
         return namestub.getUserMap();
     }
 
-    private boolean leadercheck(User leaderNaming) throws RemoteException {
+    private boolean leadercheck(User leaderNaming) {
         // leader check
         boolean leaderFlag;
-        if (leaderNaming.getId().equals(currentUser.getId())){
-            leaderFlag = true;
-        }else {
-            leaderFlag = false;
-        }
+        leaderFlag = leaderNaming.getId().equals(currentUser.getId());
         return leaderFlag;
     }
-    public Map<Integer, List<String>> liveCheck () throws RemoteException{
-        List<String> mList = new ArrayList<>();
+    public Map<Integer, List<String>> liveCheck (){
+        List<String> mList;
         List<String> liveM = new ArrayList<>();
         List<String> DeadM = new ArrayList<>();
-        try {
-            mList = getAllMembers();
-        } catch (RemoteException remoteException) {
-            remoteException.printStackTrace();
-        }
+        mList = getAllMembers();
 
         for (String m:mList){
             Registry registry = null;
@@ -238,5 +241,16 @@ public class GroupManager implements IGroupManagement, Serializable {
         map.put(1,liveM);
         map.put(0,DeadM);
         return map;
+    }
+
+    @Override
+    public boolean checkNameStub() throws RemoteException {
+        Registry registry = LocateRegistry.getRegistry(8888);
+        try {
+            INamingService nameStub = (INamingService) registry.lookup("NamingService");
+            return true;
+        } catch (NotBoundException e) {
+            return false;
+        }
     }
 }

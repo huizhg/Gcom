@@ -1,4 +1,4 @@
-package se.umu.cs.gcom.Debugger;
+package se.umu.cs.gcom.Client;
 
 import javax.swing.*;
 import java.lang.reflect.InvocationTargetException;

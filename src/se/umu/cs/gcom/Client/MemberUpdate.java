@@ -1,4 +1,4 @@
-package se.umu.cs.gcom.Debugger;
+package se.umu.cs.gcom.Client;
 
 import se.umu.cs.gcom.GroupManagement.GroupManager;
 
@@ -21,13 +21,9 @@ public class MemberUpdate extends SwingWorker<Void, List<String>> {
     protected Void doInBackground() throws Exception {
         while(!isCancelled()){
             List<String> liveM = new ArrayList<>();
-            try {
-                Map<Integer, List<String>> map = groupManager.liveCheck();
-                liveM = map.get(1);
-                publish(liveM);
-            } catch (RemoteException remoteException) {
-                remoteException.printStackTrace();
-            }
+            Map<Integer, List<String>> map = groupManager.liveCheck();
+            liveM = map.get(1);
+            publish(liveM);
 
             Thread.sleep(5000);
         }

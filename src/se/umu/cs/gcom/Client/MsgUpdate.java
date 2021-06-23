@@ -1,12 +1,10 @@
-package se.umu.cs.gcom.Debugger;
+package se.umu.cs.gcom.Client;
 
 import se.umu.cs.gcom.GroupManagement.GroupManager;
-import se.umu.cs.gcom.MessageOrdering.Message;
-import se.umu.cs.gcom.MessageOrdering.MessageType;
+import se.umu.cs.gcom.GCom.Message;
+import se.umu.cs.gcom.GCom.MessageType;
 
 import javax.swing.*;
-import java.rmi.RemoteException;
-import java.util.ArrayList;
 import java.util.List;
 
 public class MsgUpdate extends SwingWorker<Void, Message> {
@@ -26,7 +24,7 @@ public class MsgUpdate extends SwingWorker<Void, Message> {
     protected Void doInBackground() throws Exception {
 
         while(!isCancelled()){
-            Message msg = groupManager.getCurrentGroup().getOrderingMethod().deliver();
+            Message msg = groupManager.getCurrentGroup().getOrderingModule().deliver();
 
             publish(msg);
 //            Thread.sleep(1000);

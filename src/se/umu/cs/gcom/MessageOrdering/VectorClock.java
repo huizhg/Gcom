@@ -1,6 +1,6 @@
 package se.umu.cs.gcom.MessageOrdering;
 
-import se.umu.cs.gcom.GroupManagement.User;
+import se.umu.cs.gcom.GCom.User;
 
 import java.io.Serializable;
 import java.util.*;
@@ -26,14 +26,11 @@ public class VectorClock implements Comparable<VectorClock>, Serializable {
     }
 
     public void increment(User user) {
-//        System.out.println("User ID = "+user.getUserID());
         Integer oldValue = clock.get(user.getUserID());
         if (oldValue == null){
             oldValue = 0;
         }
         Integer newValue = oldValue + 1;
-//        System.out.println("Old value = "+oldValue);
-//        System.out.println("new value = "+newValue);
         clock.put(user.getUserID(), newValue);
     }
 
@@ -49,18 +46,9 @@ public class VectorClock implements Comparable<VectorClock>, Serializable {
      *                   clock of current process with the received clock and update the clock of current process.
      */
     public void update(VectorClock otherClock) {
-//        System.out.println("In update.");
         ArrayList<UUID> knownUsers = new ArrayList<>(this.clock.keySet());
-//        System.out.println("Known user - "+knownUsers.toString());
-//        System.out.println("Incoming - "+otherClock.clock.keySet());
-//        System.out.println(knownUsers.addAll(otherClock.clock.keySet()));
-        // Expand the users set, because the vector clock from a received message may contain the clock of other users
-        // that the current clock has not seen before.
         knownUsers.addAll(otherClock.clock.keySet());
-//        System.out.println("Before loop");
-        for (UUID userID : knownUsers
-        ) {
-//            System.out.println("In loop");
+        for (UUID userID : knownUsers) {
             clock.putIfAbsent(userID, 0);
             otherClock.clock.putIfAbsent(userID, 0);
             this.clock.put(userID, Math.max(this.clock.get(userID), otherClock.clock.get(userID)));
@@ -87,11 +75,9 @@ public class VectorClock implements Comparable<VectorClock>, Serializable {
 
     }
     public VectorClock copy() throws CloneNotSupportedException {
-//        System.out.println("Cloneing!");
         HashMap<UUID, Integer> copyMap = new HashMap<UUID, Integer>();
         copyMap.putAll(this.clock);
-        VectorClock newClock = new VectorClock(copyMap);
-        return newClock;
+        return new VectorClock(copyMap);
     }
 
     @Override

@@ -1,33 +1,18 @@
-package se.umu.cs.gcom.Debugger;
+package se.umu.cs.gcom.Client;
 
 
-import se.umu.cs.gcom.Communication.Communication;
-import se.umu.cs.gcom.Communication.NonReliableMulticast;
-import se.umu.cs.gcom.GroupManagement.*;
-import se.umu.cs.gcom.MessageOrdering.*;
-import se.umu.cs.gcom.Naming.INamingService;
-
+import se.umu.cs.gcom.GCom.*;
 import javax.swing.*;
-import java.rmi.NotBoundException;
-import java.rmi.Remote;
 import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 public class MainController {
     private MainView mainView;
-    private User user;
-    private GroupManager groupManager;
     private IGComService gComService;
-    private Ordering orderingMethod;
 
 
-    private Registry registry;
-    private INamingService nameStub;
     private GroupUpdate groupUpdate;
     private MemberUpdate memberUpdate;
     private MsgUpdate msgUpdate;
@@ -41,46 +26,61 @@ public class MainController {
         loginButtonListener();
     }
     private void groupController(){
-        groupUpdate = new GroupUpdate(nameStub,mainView.getGrouplistField());
-        groupUpdate.execute();
+        try {
+            groupUpdate = new GroupUpdate(gComService.getNameStub(),mainView.getGrouplistField());
+            groupUpdate.execute();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
         createButtonListener();
         removeButtionListener();
         joinButtionListener();
     }
     private void userController(){
-        memberUpdate = new MemberUpdate(groupManager,mainView.getMemberlist());
-        memberUpdate.execute();
+        try {
+            memberUpdate = new MemberUpdate(gComService.getGroupManager(),mainView.getMemberlist());
+            memberUpdate.execute();
+            msgUpdate = new MsgUpdate(gComService.getGroupManager(),mainView.getMessagelist(),mainView.BackendArea,mainView.PerformanceArea);
+            msgUpdate.execute();
 
-        msgUpdate = new MsgUpdate(groupManager,mainView.getMessagelist(),mainView.BackendArea,mainView.PerformanceArea);
-        msgUpdate.execute();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
 
-        groupManager.notifyMemberJoined(user);
 
         updateMemberButtonListener();
         leaveButtonListenser();
         debugButtionListener();
         removeMButtonListener();
         addMButtonListener();
-        orderingMethod = groupManager.getCurrentGroup().getOrderingMethod();
 
         mainView.getSend().addActionListener(e -> {
             String msgContent = mainView.getInputMessage().getText();
-            Message msg = new Message(user,MessageType.NORMAL,msgContent);
-            msg = orderingMethod.createMsg(msg);
 
-            if(mainView.getDebugframe().isVisible()){
-                mainView.msglistModel.addElement(msg);
-            }else {
-                System.out.println("Multicast");
-                groupManager.multicast(msg);
+            try {
+                Message msg = gComService.prepareMsg(MessageType.NORMAL, msgContent);
+                if(mainView.getDebugframe().isVisible()){
+                    mainView.msglistModel.addElement(msg);
+                }else {
+                    System.out.println("Multicast");
+                    try {
+                        gComService.multicast(msg);
+                    } catch (RemoteException remoteException) {
+                        remoteException.printStackTrace();
+                    }
+                }
+            } catch (RemoteException remoteException) {
+                remoteException.printStackTrace();
             }
+
+
         });
     }
     private void addMButtonListener(){
         mainView.getAddMemberButton().addActionListener(e -> {
             String memberName = (String) mainView.getInputMessage().getText();
             try {
-                groupManager.addMember(memberName);
+                gComService.addMember(memberName);
             } catch (RemoteException remoteException) {
                 remoteException.printStackTrace();
             }
@@ -91,7 +91,7 @@ public class MainController {
         mainView.getRemoveMemberButton().addActionListener(e -> {
             String memberName = (String) mainView.getMemberlist().getSelectedValue();
             try {
-                groupManager.removeMember(memberName);
+                gComService.removeMember(memberName);
             } catch (RemoteException remoteException) {
                 remoteException.printStackTrace();
             }
@@ -102,7 +102,7 @@ public class MainController {
         mainView.getLeaveButton().addActionListener(e -> {
             msgUpdate.cancel(true);
             try {
-                groupManager.leaveGroup();
+                gComService.leaveGroup();
 
             } catch (RemoteException remoteException) {
                 remoteException.printStackTrace();
@@ -118,19 +118,32 @@ public class MainController {
     }
     private void debugButtionListener(){
         mainView.getDebugButton().addActionListener(e -> {
-            String username = user.getId();
+            String username = null;
+            try {
+                username = gComService.getUser().getId();
+            } catch (RemoteException remoteException) {
+                remoteException.printStackTrace();
+            }
 
             mainView.builddebugView(username);
 
-            queueUpdate = new QueueUpdate(orderingMethod,mainView.getDebugqueueList());
-            queueUpdate.execute();
+            try {
+                queueUpdate = new QueueUpdate(gComService.getGroupManager().getCurrentGroup().getOrderingModule(),mainView.getDebugqueueList());
+                queueUpdate.execute();
+            } catch (RemoteException remoteException) {
+                remoteException.printStackTrace();
+            }
 
             mainView.getDebugsendButton().addActionListener(e1 -> {
                 System.out.println("Debug Send was clicked.");
-                Integer msgNum = mainView.getDebugmessagesList().getSelectedIndex();
+                int msgNum = mainView.getDebugmessagesList().getSelectedIndex();
                 Message msg = (Message) mainView.getDebugmessagesList().getSelectedValue();
                 System.out.println("Sent Msg = "+msg.toString());
-                groupManager.multicast(msg);
+                try {
+                    gComService.multicast(msg);
+                } catch (RemoteException remoteException) {
+                    remoteException.printStackTrace();
+                }
                 mainView.msglistModel.remove(msgNum);
             });
             mainView.getDebugdeliverButton().addActionListener(e2 -> {
@@ -147,12 +160,13 @@ public class MainController {
     private void updateMemberList(){
         System.out.println("Update member list");
         List<String> liveM = new ArrayList<>();
+        Map<Integer, List<String>> map = null;
         try {
-            Map<Integer, List<String>> map = groupManager.liveCheck();
-            liveM = map.get(1);
-        } catch (RemoteException remoteException) {
-            remoteException.printStackTrace();
+            map = gComService.liveCheck();
+        } catch (RemoteException e) {
+            e.printStackTrace();
         }
+        liveM = map.get(1);
 
         DefaultListModel<String> mListModel = new DefaultListModel<>();
         for (String m:liveM){
@@ -169,8 +183,9 @@ public class MainController {
     private void joinGroupAction(String groupName){
         String username = "";
         try {
-            groupManager.joinGroup(groupName);
-            username = user.getId();
+            String leaderId = mainView.getJoinGroupField().getText();
+            gComService.joinGroup(groupName,leaderId);
+            username = gComService.getUser().getId();
             System.out.println("Join Group: "+ groupName+", User: "+username);
 
             mainView.getGroupPanel().setEnabled(false);
@@ -180,6 +195,10 @@ public class MainController {
         } catch (RemoteException remoteException) {
             System.out.println("Failed to join group.");
             remoteException.printStackTrace();
+        } catch (NullPointerException nullPointerException){
+            System.out.println("Others.");
+            String leaderId = mainView.getJoinGroupField().getText();
+            System.out.println(leaderId);
         }
 
     }
@@ -187,8 +206,8 @@ public class MainController {
         mainView.getRemoveButton().addActionListener(e -> {
             String groupName = (String) mainView.getGrouplistField().getSelectedValue();
             try {
-                groupManager.removeGroup(groupName);
-                System.out.println("Remove Group: "+ groupName+", leader: "+user.getId());
+                gComService.removeGroup(groupName);
+                System.out.println("Remove Group: "+ groupName+", leader: "+gComService.getUser().getId());
             } catch (RemoteException remoteException) {
                 System.out.println("Failed to remove group.");
             }
@@ -199,24 +218,16 @@ public class MainController {
         mainView.getCreateButton().addActionListener(e -> {
             String groupName = mainView.getCreateGroupField().getText();
 
-            Group createdGroup = new Group(groupName);
-            if(Objects.equals(mainView.getComTypeBox().getSelectedItem(), "Non reliable")) {
-                createdGroup.setCommunicationMethod(new NonReliableMulticast());
-            }
-            if(Objects.equals(mainView.getOrderTypeBox().getSelectedItem(), "Unordered")){
-                createdGroup.setOrderingMethod(new UnorderedMessageOrdering());
-            }else if (mainView.getOrderTypeBox().getSelectedItem().equals("Causal")){
-                createdGroup.setOrderingMethod(new CausalMessageOrdering());
-            }
-
             try {
-                groupManager.createGroup(groupName,createdGroup);
-                System.out.println("Create Group: "+ groupName+", leader: "+user.getId());
+                String username = gComService.getUser().getId();
+                gComService.createGroup(groupName,(String)mainView.getComTypeBox().getSelectedItem(),(String)mainView.getOrderTypeBox().getSelectedItem());
+                mainView.getFrame().setTitle("GCom Chat View: User - "+username+" Last Group: "+groupName);
             } catch (RemoteException remoteException) {
                 System.out.println("Failed to create group.");
                 remoteException.printStackTrace();
             }
-            updateGrouplist();
+
+//            updateGrouplist();
 
         });
     }
@@ -224,7 +235,7 @@ public class MainController {
     private void updateGrouplist() {
         List<String> groupList = new ArrayList<>();
         try {
-            groupList = nameStub.getAllGroups();
+            groupList = gComService.getAllGroups();
             System.out.println("Group list was updated.");
         } catch (RemoteException e) {
             System.out.println("Failed to update group list.");
@@ -239,19 +250,9 @@ public class MainController {
     private void loginButtonListener(){
         mainView.getLoginButton().addActionListener(e -> {
             String username = mainView.getUserText().getText();
-            this.user = new User(username);
             try {
-                this.registry = LocateRegistry.getRegistry(8888);
-                this.nameStub = (INamingService) registry.lookup("NamingService");
-                this.groupManager = new GroupManager(this.user,this.nameStub);
-            } catch (RemoteException | NotBoundException remoteException) {
-                remoteException.printStackTrace();
-            }
-
-            try {
-                gComService = new GComService(this.user,this.groupManager);
+                gComService = new GComService(username);
                 System.out.println("Init user: username - "+username);
-                this.registry.rebind(username, (Remote) gComService);
             } catch (RemoteException  remoteException) {
                 remoteException.printStackTrace();
             }

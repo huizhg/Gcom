@@ -1,6 +1,6 @@
 package se.umu.cs.gcom.Naming;
 
-import se.umu.cs.gcom.GroupManagement.User;
+import se.umu.cs.gcom.GCom.User;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -38,21 +38,16 @@ public class NamingService extends UnicastRemoteObject implements INamingService
 
     @Override
     public User getLeader(String groupId) throws RemoteException {
-        User leader = userMap.get(groupId);
-        System.out.println("Access Group leader:"+leader.getId());
-        return leader;
+        return userMap.get(groupId);
     }
 
     @Override
     public List<String> getAllGroups() throws RemoteException {
-        List<String> grouplist = new ArrayList<String>(userMap.keySet());
-//        System.out.println("Access All Groups.");
-        return grouplist;
+        return new ArrayList<String>(userMap.keySet());
     }
 
     @Override
     public HashMap<String, User> getUserMap() throws RemoteException {
-        System.out.println("Access User Hash Map.");
         return userMap;
     }
 }

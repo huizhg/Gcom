@@ -1,6 +1,6 @@
 package se.umu.cs.gcom.Naming;
 
-import se.umu.cs.gcom.GroupManagement.User;
+import se.umu.cs.gcom.GCom.User;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;

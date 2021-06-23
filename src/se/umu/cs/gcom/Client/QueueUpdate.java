@@ -1,4 +1,4 @@
-package se.umu.cs.gcom.Debugger;
+package se.umu.cs.gcom.Client;
 
 import se.umu.cs.gcom.MessageOrdering.Ordering;
 

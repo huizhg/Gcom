@@ -1,6 +1,6 @@
-package se.umu.cs.gcom.MessageOrdering;
+package se.umu.cs.gcom.GCom;
 
 public enum MessageType {
 //    JOIN, LEAVE, NORMAL, ELECTION
-    NORMAL,Notify,
+    NORMAL, Notification,
 }

@@ -1,6 +1,6 @@
-package se.umu.cs.gcom.Debugger;
+package se.umu.cs.gcom.Client;
 
-import se.umu.cs.gcom.MessageOrdering.Message;
+import se.umu.cs.gcom.GCom.Message;
 
 import javax.swing.*;
 import java.awt.*;
@@ -8,12 +8,10 @@ import java.awt.*;
 
 public class MainView extends JFrame {
     private JFrame frame = new JFrame("G-Login");
-
     private JPanel loginPanel = new JPanel();
-    private JLabel userLabel = new JLabel("User:");           // 创建UserJLabel
-    private JTextField userText = new JTextField();           // 获取登录名
-    private JButton loginButton = new JButton("login");       // 创建登录按钮
-
+    private JLabel userLabel = new JLabel("User:");
+    private JTextField userText = new JTextField();
+    private JButton loginButton = new JButton("login");
     private JPanel groupPanel = new JPanel();
     private JTextField createGroupField;
     private JComboBox comTypeBox;
@@ -21,12 +19,11 @@ public class MainView extends JFrame {
     private JButton createButton;
     private JButton joinButton;
 
-
     private JList grouplistField;
     private JLabel createGroupLabel;
     private JLabel communicationLabel;
-//    private JLabel joinGroupLabel;
-//    private JTextField joinGroupField;
+    private JLabel joinGroupLabel;
+    private JTextField joinGroupField;
     private JLabel orderingLabel;
     private JButton removeButton;
 
@@ -138,6 +135,10 @@ public class MainView extends JFrame {
         return joinButton;
     }
 
+    public JTextField getJoinGroupField() {
+        return joinGroupField;
+    }
+
     public JComboBox getComTypeBox() {
         return comTypeBox;
     }
@@ -159,6 +160,10 @@ public class MainView extends JFrame {
     }
     public JButton getLoginButton() {
         return loginButton;
+    }
+
+    public JFrame getFrame() {
+        return frame;
     }
 
     public MainView() {
@@ -410,6 +415,25 @@ public class MainView extends JFrame {
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         groupPanel.add(createGroupField, gbc);
+
+        joinGroupLabel = new JLabel();
+        joinGroupLabel.setText("Join Group");
+        gbc = new GridBagConstraints();
+        gbc.gridx = 2;
+        gbc.gridy = 0;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        gbc.anchor = GridBagConstraints.WEST;
+        groupPanel.add(joinGroupLabel, gbc);
+        joinGroupField = new JTextField();
+        gbc = new GridBagConstraints();
+        gbc.gridx = 3;
+        gbc.gridy = 0;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        groupPanel.add(joinGroupField, gbc);
 
         orderingLabel = new JLabel();
         orderingLabel.setText("Ordering");

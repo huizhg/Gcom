@@ -1,25 +1,25 @@
-package se.umu.cs.gcom.MessageOrdering;
+package se.umu.cs.gcom.GCom;
 
-import se.umu.cs.gcom.GroupManagement.User;
+import se.umu.cs.gcom.MessageOrdering.VectorClock;
 
 import java.io.Serializable;
 
 public class Message implements Serializable {
     private static final long serialVersionUID = -5012466034995408607L;
-    private User sender;
-    private MessageType messageType;
+    private final User sender;
+    private final MessageType messageType;
     private String messageContent;
     private VectorClock vectorClock;
     private String msgPath = "Created.";
-    private long createdtime;
+    private final long createdtime;
     private int performance;
 
 
-    public Message(User sender, MessageType messageType) {
-        this.sender = sender;
-        this.messageType = messageType;
-        this.createdtime = System.currentTimeMillis();
-    }
+//    public Message(User sender, MessageType messageType) {
+//        this.sender = sender;
+//        this.messageType = messageType;
+//        this.createdtime = System.currentTimeMillis();
+//    }
 
     public Message(User sender, MessageType messageType, String messageContent) {
         this.sender = sender;

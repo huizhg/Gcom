@@ -1,9 +1,10 @@
 package se.umu.cs.gcom.MessageOrdering;
 
-import se.umu.cs.gcom.GroupManagement.User;
+import se.umu.cs.gcom.GCom.Message;
+import se.umu.cs.gcom.GCom.MessageType;
+import se.umu.cs.gcom.GCom.User;
 
 import javax.swing.*;
-import java.io.PrintWriter;
 import java.io.Serializable;
 import java.util.*;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -11,10 +12,10 @@ import java.util.concurrent.PriorityBlockingQueue;
 
 public class CausalMessageOrdering implements Ordering, Serializable {
     private static final long serialVersionUID = 6080610752003408072L;
-    private PriorityBlockingQueue<Message> deliverQueue;
-    private LinkedBlockingDeque<Message> messagesQueue;
-    private VectorClock currentProcessClock;
-    private VectorClock deliverClock;
+    private final PriorityBlockingQueue<Message> deliverQueue;
+    private final LinkedBlockingDeque<Message> messagesQueue;
+    private final VectorClock currentProcessClock;
+    private final VectorClock deliverClock;
 
     public CausalMessageOrdering(){
         messagesQueue = new LinkedBlockingDeque<>(11);
@@ -26,10 +27,7 @@ public class CausalMessageOrdering implements Ordering, Serializable {
     private boolean checkIncomingMsg(Message message,User user){
         UUID ownId = user.getUserID();
         UUID incomingId = message.getSender().getUserID();
-//        System.out.println("ownId = "+ownId);
-//        System.out.println("incomingId = "+incomingId);
         VectorClock inComingClock = message.getVectorClock();
-//        Boolean outputFlag = false;
         if (currentProcessClock.getClock().keySet().isEmpty()){
             currentProcessClock.initialize(ownId);
             currentProcessClock.initialize(incomingId);
@@ -47,11 +45,6 @@ public class CausalMessageOrdering implements Ordering, Serializable {
                 currentProcessClock.initialize(userID);
             }
         }
-//        System.out.println("Deliver = "+deliverClock.toString());
-//        System.out.println("Incoming = "+inComingClock.toString());
-//        System.out.println("current = "+currentProcessClock.toString());
-//        System.out.println("In = own?"+incomingId.equals(ownId));
-//        System.out.println("+1?"+inComingClock.getUserClock(ownId).equals(deliverClock.getUserClock(ownId)+1));
         if (incomingId.equals(ownId)) {
             if (inComingClock.getUserClock(ownId).equals(deliverClock.getUserClock(ownId) + 1)) {
                 deliverClock.increment(user);
@@ -70,13 +63,12 @@ public class CausalMessageOrdering implements Ordering, Serializable {
         }
 
         return false;
-//        return false;
     }
 
     @Override
     public void receive(Message message, User user) {
         message.updateMsgPath("-Causal");
-        if (message.getMessageType()==MessageType.NORMAL) {
+        if (message.getMessageType()== MessageType.NORMAL) {
 
             Message incomingMsg = message;
             deliverQueue.put(message);
@@ -89,15 +81,11 @@ public class CausalMessageOrdering implements Ordering, Serializable {
                     messagesQueue.put(incomingMsg);
                     deliverQueue.remove(incomingMsg);
                     incomingMsg = deliverQueue.peek();
-//                System.out.println("Put?"+messagesQueue.size());
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
 
                 if (incomingMsg == null) {
-//                if (deliverQueue.isEmpty()){
-//                    deliverClock.update(currentProcessClock);
-//                }
                     break;
                 }
             }
@@ -119,7 +107,7 @@ public class CausalMessageOrdering implements Ordering, Serializable {
     }
 
     @Override
-    public Message createMsg(Message message) {
+    public Message prepareMsg(Message message) {
 
         message.updateMsgPath("-AddClock");
         currentProcessClock.increment(message.getSender());
@@ -152,7 +140,7 @@ public class CausalMessageOrdering implements Ordering, Serializable {
     }
 
 
-    private class MessageComparator implements Comparator<Message>,Serializable {
+    private static class MessageComparator implements Comparator<Message>,Serializable {
         private static final long serialVersionUID = -4365651154312787320L;
 
         @Override

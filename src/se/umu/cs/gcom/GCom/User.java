@@ -1,23 +1,23 @@
-package se.umu.cs.gcom.GroupManagement;
+package se.umu.cs.gcom.GCom;
 
-import se.umu.cs.gcom.MessageOrdering.Message;
-
+import javax.swing.text.html.HTMLDocument;
 import java.io.Serializable;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
-public class User implements IUser, Serializable {
+public class User implements Serializable {
     private static final long serialVersionUID = -3972163092132587040L;
     private String userId;
     private IGComService gcomstub;
 
-    private UUID userID;
-    private List<Group> groupList;
+    private final UUID userID;
+    private final List<Group> groupList;
 
     public User(String userId) {
         this.userId = userId;
@@ -32,9 +32,7 @@ public class User implements IUser, Serializable {
 
     public IGComService getgcomstub() throws RemoteException, NotBoundException {
         Registry registry = LocateRegistry.getRegistry(8888);
-        // Different groups with same user need different gcomstub
-        IGComService gcomstub = (IGComService) registry.lookup(this.userId);
-        return gcomstub;
+        return (IGComService) registry.lookup(this.userId);
     }
 
     public UUID getUserID() {
@@ -55,7 +53,7 @@ public class User implements IUser, Serializable {
     }
 
     public void addGroup(Group newGroup){
-        Boolean flag = true;
+        boolean flag = true;
         for (Group g:groupList){
             if (g.getGroupName().equals(newGroup.getGroupName())) {
                 flag = false;
@@ -67,13 +65,12 @@ public class User implements IUser, Serializable {
         }
     }
 
-    @Override
+    public void removeGroup(String groupName){
+        groupList.removeIf(group -> group.getGroupName().equals(groupName));
+    }
+    
     public String getId(){
         return userId;
     }
 
-    @Override
-    public void sendMessage(Message msg) throws RemoteException {
-
-    }
 }

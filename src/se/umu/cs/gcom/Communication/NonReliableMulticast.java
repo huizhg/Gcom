@@ -1,21 +1,19 @@
 package se.umu.cs.gcom.Communication;
 
-import se.umu.cs.gcom.GroupManagement.IGComService;
-import se.umu.cs.gcom.GroupManagement.User;
-import se.umu.cs.gcom.MessageOrdering.Message;
-import se.umu.cs.gcom.MessageOrdering.Ordering;
+import se.umu.cs.gcom.GCom.IGComService;
+import se.umu.cs.gcom.GCom.Message;
 
+import java.io.Serializable;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.ArrayList;
 import java.util.List;
 
-public class NonReliableMulticast extends Communication{
+public class NonReliableMulticast implements Communication, Serializable {
 
     private static final long serialVersionUID = -4095746841369138625L;
 
     public NonReliableMulticast() {
-
     }
 
     @Override
@@ -24,7 +22,6 @@ public class NonReliableMulticast extends Communication{
         msg.updateMsgPath("-Multicast");
         msg.setPerformance(mlist.size());
         for (String m:mlist){
-//            System.out.println("member = "+m);
             try {
                 Registry registry = LocateRegistry.getRegistry(8888);
                 IGComService mStub = (IGComService) registry.lookup(m);
