@@ -129,7 +129,7 @@ public class GroupManager implements IGroupManagement, Serializable {
                     IGComService mStub = (IGComService) registry.lookup(newLeaderName);
                     User newLeader = mStub.getUser();
                     namestub.updateGroup(groupId,newLeader);
-                } catch (NotBoundException ignored) {
+                } catch (Exception ignored) {
                 }
             }else {
                 System.out.println("False leader.");

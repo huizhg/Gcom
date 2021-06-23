@@ -11,7 +11,6 @@ import java.util.Map;
 public interface IGroupManagement {
     //1
     void joinGroup(String groupId,String leaderId) throws RemoteException;
-
     void leaveGroup() throws RemoteException;
 
     void createGroup(String groupId, Group group) throws RemoteException;

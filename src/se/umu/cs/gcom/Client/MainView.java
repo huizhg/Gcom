@@ -417,7 +417,7 @@ public class MainView extends JFrame {
         groupPanel.add(createGroupField, gbc);
 
         joinGroupLabel = new JLabel();
-        joinGroupLabel.setText("Join Group");
+        joinGroupLabel.setText("Join Group by Member");
         gbc = new GridBagConstraints();
         gbc.gridx = 2;
         gbc.gridy = 0;
